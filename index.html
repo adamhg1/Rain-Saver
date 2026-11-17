@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rain Bucket Waterer</title>
+<meta name="description" content="A science fair project: an Arduino system that waters plants automatically with collected rainwater.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0b2a4a;
+    --navy-2: #123d66;
+    --blue: #0072ce;
+    --sky: #e8f3fc;
+    --green: #3a9d23;
+    --green-soft: #eaf6e5;
+    --ink: #1c2733;
+    --muted: #5a6876;
+    --line: #d9e2ea;
+    --bg: #ffffff;
+    --bg-alt: #f5f8fb;
+    --warn: #b85c00;
+    --warn-soft: #fff4e5;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Source Sans 3", "Segoe UI", Arial, sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+  }
+  a { color: var(--blue); }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+
+  /* Top bar */
+  .topbar { background: var(--navy); color: #fff; position: sticky; top: 0; z-index: 10; }
+  .topbar .wrap { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 64px; flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 20px; color: #fff; text-decoration: none; }
+  .brand .drop { width: 30px; height: 30px; }
+  nav { display: flex; gap: 4px; flex-wrap: wrap; }
+  nav a { color: #cfe3f7; text-decoration: none; font-weight: 600; font-size: 16px; padding: 8px 10px; border-radius: 6px; }
+  nav a:hover { background: var(--navy-2); color: #fff; }
+
+  /* Hero */
+  .hero { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-2) 55%, var(--blue) 100%); color: #fff; padding: 72px 0 80px; }
+  .hero .tag { display: inline-block; background: var(--green); color: #fff; font-weight: 700; font-size: 14px; letter-spacing: .04em; text-transform: uppercase; padding: 4px 12px; border-radius: 999px; }
+  .hero h1 { font-size: clamp(34px, 6vw, 56px); line-height: 1.1; margin: 18px 0 16px; font-weight: 800; max-width: 760px; }
+  .hero p { font-size: 21px; max-width: 680px; color: #dcebf9; margin: 0 0 28px; }
+  .btn { display: inline-block; background: #fff; color: var(--navy); font-weight: 700; padding: 12px 22px; border-radius: 6px; text-decoration: none; margin: 0 10px 10px 0; }
+  .btn.ghost { background: transparent; color: #fff; border: 2px solid #fff; }
+
+  /* Stats */
+  .stats { margin-top: -40px; }
+  .stats .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .stat { background: #fff; border: 1px solid var(--line); border-top: 4px solid var(--blue); border-radius: 8px; padding: 20px; box-shadow: 0 6px 20px rgba(11,42,74,.08); }
+  .stat:nth-child(2) { border-top-color: var(--green); }
+  .stat:nth-child(4) { border-top-color: var(--green); }
+  .stat .num { font-size: 32px; font-weight: 800; color: var(--navy); line-height: 1.1; }
+  .stat .lbl { color: var(--muted); font-size: 16px; }
+
+  /* Sections */
+  section { padding: 64px 0; scroll-margin-top: 64px; }
+  section.alt { background: var(--bg-alt); }
+  h2 { font-size: 34px; color: var(--navy); margin: 0 0 8px; line-height: 1.2; }
+  .lead { color: var(--muted); font-size: 20px; margin: 0 0 32px; max-width: 760px; }
+  h3 { color: var(--navy); margin: 0 0 6px; font-size: 21px; }
+
+  .two { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 24px; }
+  .card.green { background: var(--green-soft); border-color: #cfe8c6; }
+  .card.sky { background: var(--sky); border-color: #cde3f5; }
+  .card p { margin: 0; }
+  ul.check { list-style: none; padding: 0; margin: 12px 0 0; }
+  ul.check li { padding-left: 30px; position: relative; margin-bottom: 8px; }
+  ul.check li::before { content: "✓"; position: absolute; left: 0; top: 0; color: var(--green); font-weight: 800; }
+
+  /* Flow */
+  .flow { display: flex; align-items: stretch; gap: 0; flex-wrap: wrap; justify-content: center; }
+  .step { flex: 1 1 150px; max-width: 200px; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 18px 14px; text-align: center; }
+  .step .ic { font-size: 34px; line-height: 1; margin-bottom: 8px; }
+  .step b { display: block; color: var(--navy); }
+  .step span { font-size: 15px; color: var(--muted); }
+  .arrow { display: flex; align-items: center; justify-content: center; color: var(--blue); font-size: 28px; font-weight: 800; padding: 0 8px; }
+
+  .steps-list { counter-reset: s; list-style: none; padding: 0; margin: 32px 0 0; display: grid; gap: 12px; }
+  .steps-list li { counter-increment: s; background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px 14px 64px; position: relative; }
+  .steps-list li::before { content: counter(s); position: absolute; left: 16px; top: 12px; width: 32px; height: 32px; border-radius: 50%; background: var(--blue); color: #fff; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+
+  /* Parts table */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: #fff; }
+  table { width: 100%; border-collapse: collapse; min-width: 560px; }
+  th, td { text-align: left; padding: 12px 16px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--navy); color: #fff; font-weight: 700; }
+  tr:last-child td { border-bottom: 0; }
+  tbody tr:nth-child(even) td { background: var(--bg-alt); }
+  td:first-child { font-weight: 700; color: var(--navy); white-space: nowrap; }
+
+  /* Safety */
+  .safety { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .safety .card { border-left: 4px solid var(--green); }
+  .note { background: var(--warn-soft); border: 1px solid #f3d3a8; border-left: 4px solid var(--warn); border-radius: 8px; padding: 16px 20px; margin-top: 24px; }
+
+  /* Code */
+  .code-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; background: var(--navy); color: #fff; padding: 10px 16px; border-radius: 8px 8px 0 0; flex-wrap: wrap; }
+  .code-head button { background: var(--green); color: #fff; border: 0; font: inherit; font-weight: 700; font-size: 15px; padding: 8px 16px; border-radius: 6px; cursor: pointer; }
+  pre { margin: 0; background: #0f1b28; color: #d6e4f0; padding: 20px; border-radius: 0 0 8px 8px; overflow: auto; max-height: 520px; font-size: 14px; line-height: 1.5; }
+  code { font-family: "Consolas", "Menlo", monospace; }
+
+  /* Results */
+  .log { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .blank { border: 2px dashed var(--line); background: #fff; border-radius: 8px; padding: 20px; color: var(--muted); }
+
+  footer { background: var(--navy); color: #cfe3f7; padding: 32px 0; font-size: 16px; }
+  footer b { color: #fff; }
+
+  @media (max-width: 860px) {
+    .stats .grid { grid-template-columns: repeat(2, 1fr); }
+    .two, .safety, .log { grid-template-columns: 1fr; }
+    .arrow { transform: rotate(90deg); flex-basis: 100%; padding: 4px 0; }
+    .step { max-width: 100%; flex-basis: 100%; }
+    nav { display: none; }
+  }
+  /* Simulator */
+  .sim { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+  .scene { display: flex; align-items: center; background: linear-gradient(#eaf4fd, #ffffff); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+  .scene svg { width: 100%; height: auto; display: block; }
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 18px; display: flex; flex-direction: column; gap: 14px; }
+  .meter-lbl { display: flex; justify-content: space-between; font-weight: 700; color: var(--navy); font-size: 16px; }
+  .meter { position: relative; height: 18px; background: #eef2f6; border-radius: 9px; overflow: visible; }
+  .meter .fill { height: 100%; border-radius: 9px; width: 0; transition: width .15s linear; }
+  .meter .mark { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--navy); }
+  .meter .mark span { position: absolute; top: 22px; left: -14px; font-size: 12px; color: var(--muted); white-space: nowrap; }
+  .badge { display: inline-block; padding: 4px 12px; border-radius: 999px; font-weight: 800; font-size: 15px; color: #fff; background: var(--muted); }
+  .minis { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .mini { background: var(--bg-alt); border-radius: 6px; padding: 8px 10px; }
+  .mini b { display: block; font-size: 20px; color: var(--navy); line-height: 1.2; }
+  .mini span { font-size: 13px; color: var(--muted); }
+  .controls { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; align-items: center; }
+  .controls button, .controls select { font: inherit; font-size: 16px; font-weight: 700; padding: 9px 14px; border-radius: 6px; border: 2px solid var(--blue); background: #fff; color: var(--blue); cursor: pointer; }
+  .controls button.primary { background: var(--blue); color: #fff; }
+  .controls button.green { border-color: var(--green); background: var(--green); color: #fff; }
+  .controls label { font-weight: 700; color: var(--navy); font-size: 16px; }
+  .serial { background: #0f1b28; color: #9fe39a; font-family: Consolas, Menlo, monospace; font-size: 13px; border-radius: 8px; padding: 12px; height: 150px; overflow-y: auto; margin-top: 16px; white-space: pre-wrap; }
+  @keyframes drip { from { transform: translateY(0); opacity: 1; } to { transform: translateY(26px); opacity: 0; } }
+  .drop-a { animation: drip .6s linear infinite; }
+  .drop-b { animation: drip .6s linear .3s infinite; }
+  @media (max-width: 860px) { .sim { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <a class="brand" href="#top">
+      <svg class="drop" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4fb3ff" d="M12 2s7 7.6 7 12.5A7 7 0 0 1 5 14.5C5 9.6 12 2 12 2z"/><path fill="#7fd36a" d="M9 15.5c1.5 0 3-1.2 3-3.5 1.5 1 2 2.5 1.5 4A3 3 0 0 1 9 15.5z"/></svg>
+      Rain Bucket Waterer
+    </a>
+    <nav>
+      <a href="#why">Why</a>
+      <a href="#how">How it works</a>
+      <a href="#try">Try it</a>
+      <a href="#parts">Parts</a>
+      <a href="#safety">Safety</a>
+      <a href="#code">Code</a>
+      <a href="#results">Results</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <span class="tag">Science Fair Project</span>
+      <h1>Smart watering that runs on rain.</h1>
+      <p>An Arduino system that checks the soil and waters a plant automatically, using rainwater collected in a bucket. It saves tap water, and the plant gets water only when it needs it.</p>
+      <a class="btn" href="#how">See how it works</a>
+      <a class="btn ghost" href="#try">Try the simulator</a>
+    </div>
+  </div>
+
+  <div class="stats">
+    <div class="wrap grid">
+      <div class="stat"><div class="num">0 L</div><div class="lbl">tap water used</div></div>
+      <div class="stat"><div class="num">35%</div><div class="lbl">soil moisture that starts watering</div></div>
+      <div class="stat"><div class="num">30 s</div><div class="lbl">longest the valve stays open at once</div></div>
+      <div class="stat"><div class="num">12 V</div><div class="lbl">low-voltage valve power</div></div>
+    </div>
+  </div>
+
+  <section id="why">
+    <div class="wrap">
+      <h2>What it's for</h2>
+      <p class="lead">People often water plants on a schedule, whether the soil needs it or not. That wastes treated tap water and can drown the roots.</p>
+      <div class="two">
+        <div class="card sky">
+          <h3>The problem</h3>
+          <p>Watering by guesswork wastes water. Treated drinking water is used on gardens even though rain falls for free. Plants also get too much or too little water when nobody is home.</p>
+        </div>
+        <div class="card green">
+          <h3>My solution</h3>
+          <p>A sensor measures how wet the soil is. When it gets too dry, the Arduino opens a valve and rainwater flows from a raised bucket to the plant by gravity. No pump is needed.</p>
+          <ul class="check">
+            <li>Uses collected rainwater instead of tap water</li>
+            <li>Waters only when the soil is actually dry</li>
+            <li>Stops by itself when the soil is wet enough</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="how" class="alt">
+    <div class="wrap">
+      <h2>How it works</h2>
+      <p class="lead">Water moves by gravity. The electronics just decide when the valve opens.</p>
+      <div class="flow">
+        <div class="step"><div class="ic">🌧️</div><b>Rain bucket</b><span>Raised up, collects rain</span></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="ic">🔌</div><b>Valve</b><span>12V solenoid, opens on command</span></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="ic">🪴</div><b>Plant pot</b><span>Water flows through a tube</span></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="ic">📟</div><b>Sensor</b><span>Measures soil moisture</span></div>
+        <div class="arrow">→</div>
+        <div class="step"><div class="ic">🧠</div><b>Arduino</b><span>Decides and switches the relay</span></div>
+      </div>
+      <ol class="steps-list">
+        <li>The moisture sensor in the pot reads how wet the soil is every 5 seconds.</li>
+        <li>When moisture drops below 35%, the Arduino switches on the relay.</li>
+        <li>The relay sends 12 volts to the valve, the valve opens, and rainwater flows down the tube to the plant.</li>
+        <li>After at most 30 seconds the valve closes, and the water soaks in for 60 seconds.</li>
+        <li>The Arduino checks again. Once the soil reaches 60%, it stops and rests for 10 minutes.</li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="try">
+    <div class="wrap">
+      <h2>Try it yourself</h2>
+      <p class="lead">This simulator follows the same rules as the real Arduino code. Dry out the soil, make it rain, or empty the bucket, and watch what the waterer does.</p>
+      <div class="sim">
+        <div class="scene">
+          <svg viewBox="0 0 600 320" role="img" aria-label="Animated diagram of the rain bucket, valve and plant pot">
+            <!-- stand -->
+            <rect x="50" y="190" width="10" height="100" fill="#8a6a4a"/>
+            <rect x="140" y="190" width="10" height="100" fill="#8a6a4a"/>
+            <rect x="40" y="184" width="120" height="10" rx="2" fill="#a07a52"/>
+            <rect x="0" y="290" width="600" height="30" fill="#cfe3c4"/>
+            <!-- rain -->
+            <g id="rainDrops" opacity="0">
+              <line x1="60" y1="0" x2="55" y2="20" stroke="#4fa3e0" stroke-width="3" class="drop-a"/>
+              <line x1="95" y1="5" x2="90" y2="25" stroke="#4fa3e0" stroke-width="3" class="drop-b"/>
+              <line x1="130" y1="0" x2="125" y2="20" stroke="#4fa3e0" stroke-width="3" class="drop-a"/>
+            </g>
+            <!-- bucket -->
+            <path d="M45 50 L155 50 L148 184 L52 184 Z" fill="#ffffff" stroke="#0b2a4a" stroke-width="3"/>
+            <clipPath id="bucketClip"><path d="M47 52 L153 52 L146 182 L54 182 Z"/></clipPath>
+            <rect id="bucketWater" x="40" y="120" width="120" height="70" fill="#4fa3e0" clip-path="url(#bucketClip)"/>
+            <line x1="45" y1="50" x2="155" y2="50" stroke="#5a6876" stroke-width="2" stroke-dasharray="4 3"/>
+            <text x="100" y="40" text-anchor="middle" font-size="14" fill="#5a6876" font-weight="700">Rain bucket</text>
+            <!-- inlet tube -->
+            <path id="tubeIn" d="M148 170 H220 V230 H280" fill="none" stroke="#4fa3e0" stroke-width="10" stroke-linecap="round"/>
+            <!-- valve -->
+            <rect x="278" y="218" width="54" height="24" rx="4" fill="#9aa7b4" stroke="#0b2a4a" stroke-width="2"/>
+            <rect x="290" y="192" width="30" height="28" rx="4" fill="#1c2733"/>
+            <circle id="valveLight" cx="305" cy="206" r="6" fill="#d9534f"/>
+            <text x="305" y="264" text-anchor="middle" font-size="14" fill="#5a6876" font-weight="700">Valve</text>
+            <text id="valveText" x="305" y="181" text-anchor="middle" font-size="13" fill="#d9534f" font-weight="800">CLOSED</text>
+            <!-- outlet tube -->
+            <path id="tubeOut" d="M332 230 H380 V130 H460 V150" fill="none" stroke="#c9d3dc" stroke-width="10" stroke-linecap="round"/>
+            <g id="drips" opacity="0">
+              <circle cx="460" cy="162" r="4" fill="#4fa3e0" class="drop-a"/>
+              <circle cx="460" cy="162" r="4" fill="#4fa3e0" class="drop-b"/>
+            </g>
+            <!-- pot -->
+            <path d="M405 200 L545 200 L530 288 L420 288 Z" fill="#c4683e" stroke="#7a3b1f" stroke-width="3"/>
+            <rect id="soil" x="408" y="196" width="134" height="12" rx="3" fill="#7a5530"/>
+            <!-- plant -->
+            <g id="plant">
+              <path d="M475 196 C475 170 472 150 476 128" stroke="#3a9d23" stroke-width="5" fill="none"/>
+              <ellipse cx="456" cy="160" rx="20" ry="9" fill="#3a9d23" transform="rotate(-25 456 160)"/>
+              <ellipse cx="496" cy="146" rx="20" ry="9" fill="#4cb52f" transform="rotate(25 496 146)"/>
+              <ellipse cx="462" cy="130" rx="16" ry="7" fill="#4cb52f" transform="rotate(-30 462 130)"/>
+            </g>
+            <!-- sensor -->
+            <rect x="515" y="180" width="10" height="40" rx="2" fill="#2b6cb0"/>
+            <path d="M520 180 C520 150 560 160 560 120" stroke="#e0a100" stroke-width="2" fill="none"/>
+            <text x="560" y="112" text-anchor="middle" font-size="13" fill="#5a6876" font-weight="700">Sensor</text>
+            <!-- arduino -->
+            <rect x="200" y="96" width="120" height="58" rx="6" fill="#00878f" stroke="#0b2a4a" stroke-width="2"/>
+            <text x="260" y="122" text-anchor="middle" font-size="14" fill="#fff" font-weight="800">Arduino</text>
+            <text id="arduinoPct" x="260" y="142" text-anchor="middle" font-size="13" fill="#e6fffd">--%</text>
+            <circle id="ledDot" cx="308" cy="106" r="5" fill="#333"/>
+            <path d="M305 154 V190" stroke="#e0a100" stroke-width="2" stroke-dasharray="4 3"/>
+            <path d="M320 120 C420 120 540 80 560 106" stroke="#e0a100" stroke-width="2" fill="none" stroke-dasharray="4 3"/>
+            <text id="weatherIcon" x="560" y="40" text-anchor="middle" font-size="34">☀️</text>
+          </svg>
+        </div>
+        <div class="panel">
+          <div>
+            <div class="meter-lbl"><span>Soil moisture</span><span id="moistTxt">--%</span></div>
+            <div class="meter"><div class="fill" id="moistFill" style="background:#8a5a2b"></div>
+              <div class="mark" style="left:35%"><span>35% start</span></div>
+              <div class="mark" style="left:60%"><span>60% stop</span></div>
+            </div>
+          </div>
+          <div style="margin-top:14px">
+            <div class="meter-lbl"><span>Bucket water</span><span id="bucketTxt">--</span></div>
+            <div class="meter"><div class="fill" id="bucketFill" style="background:#4fa3e0"></div></div>
+          </div>
+          <div><span style="font-weight:700;color:var(--navy)">Arduino state: </span><span class="badge" id="stateBadge">IDLE</span></div>
+          <div id="stateHelp" style="color:var(--muted);font-size:16px">Waiting. Soil is moist enough.</div>
+          <div class="minis">
+            <div class="mini"><b id="pulseTxt">0 / 6</b><span>pulses this session</span></div>
+            <div class="mini"><b id="timerTxt">--</b><span id="timerLbl">time left</span></div>
+            <div class="mini"><b id="savedTxt">0.0 L</b><span>rainwater used (tap water saved)</span></div>
+            <div class="mini"><b id="openTxt">0 s</b><span>total valve-open time</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="controls">
+        <button class="primary" id="btnDry" type="button">🌵 Dry out the soil</button>
+        <button class="primary" id="btnRain" type="button">🌧️ Make it rain</button>
+        <button id="btnEmpty" type="button">🪣 Empty the bucket</button>
+        <button class="green" id="btnReset" type="button">↺ Reset (r)</button>
+        <button id="btnPause" type="button">⏸ Pause</button>
+        <label for="weather">Weather</label>
+        <select id="weather">
+          <option value="0.006">☁️ Cloudy</option>
+          <option value="0.02" selected>☀️ Sunny</option>
+          <option value="0.05">🔥 Hot</option>
+        </select>
+        <label for="speed">Speed</label>
+        <select id="speed">
+          <option value="1">1× (real time)</option>
+          <option value="10" selected>10×</option>
+          <option value="30">30×</option>
+        </select>
+      </div>
+      <div class="serial" id="serial" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section id="parts">
+    <div class="wrap">
+      <h2>Parts</h2>
+      <p class="lead">What each part does in the system.</p>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Part</th><th>What it does</th></tr></thead>
+          <tbody>
+            <tr><td>Arduino Uno</td><td>The brain. It reads the sensor, decides when to water, and runs the safety limits.</td></tr>
+            <tr><td>Soil moisture sensor</td><td>Measures how wet the soil is.</td></tr>
+            <tr><td>5V relay module</td><td>A switch the Arduino controls, which turns the 12V valve on and off safely.</td></tr>
+            <tr><td>12V solenoid valve</td><td>An electric tap, ½ inch, normally closed. It opens only while it has power. U.S. Solid USS2-00069, about 20 W.</td></tr>
+            <tr><td>12V 2A power adapter</td><td>Gives the valve the 12 volts it needs. The Arduino only puts out 5V.</td></tr>
+            <tr><td>1N4007 diode</td><td>Absorbs the voltage spike from the valve's coil when it turns off, protecting the relay.</td></tr>
+            <tr><td>Bucket and bulkhead</td><td>Collects rain. The bulkhead fitting makes a watertight outlet near the bottom.</td></tr>
+            <tr><td>Brass barbs, tubing, clamps</td><td>Connect the bucket to the valve and the valve to the pot without leaks.</td></tr>
+            <tr><td>Mesh screen</td><td>Covers the bucket to keep out leaves and mosquitoes.</td></tr>
+            <tr><td>Dry box</td><td>A plastic container that keeps the electronics away from water.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="safety" class="alt">
+    <div class="wrap">
+      <h2>Safety features</h2>
+      <p class="lead">Water and electricity have to be kept apart, and the valve gets hot if it stays on, so the code has several limits built in.</p>
+      <div class="safety">
+        <div class="card"><h3>30-second limit</h3><p>The valve never stays open longer than 30 seconds at a time, so the coil doesn't overheat.</p></div>
+        <div class="card"><h3>Soak and cool</h3><p>A 60-second pause after every pulse lets water reach the sensor and lets the valve cool down.</p></div>
+        <div class="card"><h3>Empty-bucket lockout</h3><p>If 4 pulses in a row don't make the soil wetter, the bucket is probably empty, so watering stops.</p></div>
+        <div class="card"><h3>Loose-wire check</h3><p>An impossible sensor reading means a wire came loose, so the valve stays shut instead of flooding the pot.</p></div>
+        <div class="card"><h3>Session limit</h3><p>At most 6 pulses per session, then a 10-minute rest.</p></div>
+        <div class="card"><h3>Low voltage only</h3><p>Everything near the water runs on 12V or 5V. The wall adapter stays dry and away from the bucket.</p></div>
+      </div>
+      <div class="note"><b>Note:</b> This valve is not made to stay on for a long time. The code makes sure it is only ever open in short bursts.</div>
+    </div>
+  </section>
+
+  <section id="code">
+    <div class="wrap">
+      <h2>The Arduino code</h2>
+      <p class="lead">Copy this into the Arduino app, click Verify, then Upload. Open the Serial Monitor at 9600 baud and type <b>?</b> to see the settings.</p>
+      <div class="code-head">
+        <span>auto_waterer.ino</span>
+        <button id="copyBtn" type="button">Copy code</button>
+      </div>
+      <pre><code id="sketch">/*
+  AUTOMATIC PLANT WATERER - Arduino Uno
+  =====================================
+  Rain bucket (raised) -&gt; bulkhead -&gt; vinyl tube -&gt; brass barb
+  -&gt; 12V solenoid valve -&gt; brass barb -&gt; vinyl tube -&gt; plant pot
+
+  PARTS
+    Valve:    U.S. Solid USS2-00069, 1/2", 12V DC, normally closed
+              about 20 W = about 1.7 A. Gets hot, so it must NOT stay on.
+    Power:    12V 2A adapter -&gt; barrel jack screw terminal
+    Relay:    5V relay module
+    Diode:    1N4007 across the valve (flyback protection)
+    Sensor:   soil moisture sensor (analog)
+
+  WIRING
+    Sensor   VCC -&gt; pin 8 (only powered while reading, slows corrosion)
+             GND -&gt; GND      AOUT -&gt; A0
+    Relay    IN  -&gt; pin 7    VCC -&gt; 5V    GND -&gt; GND
+    Valve    12V + -&gt; relay COM
+             relay NO -&gt; valve wire A  (call this one +)
+             valve wire B -&gt; 12V -
+             1N4007 across valve wires, STRIPE toward valve wire A (+)
+    Both GNDs (Arduino and 12V -) do NOT need to connect; the relay
+    keeps the 12V side separate.
+
+  SAFETY FEATURES
+    - Valve open 30 s max per pulse, then 60 s soak/cool-down
+    - Max 6 pulses per session (3 min total), then 10 min rest
+    - Lockout if 4 pulses don't make the soil wetter (empty bucket)
+    - Lockout if the sensor reading is impossible (loose wire)
+    - Valve forced closed at startup
+
+  SERIAL MONITOR (9600 baud) - type a letter and press Enter
+    t = valve TEST: opens 10 s (sink test / measure adapter voltage)
+    w = water now (one pulse)
+    s = stop watering now
+    c = calibration mode (raw numbers every second)
+    n = back to normal mode
+    r = reset after a lockout
+    ? = show settings
+*/
+
+// ================= SETTINGS YOU CAN CHANGE =================
+
+const byte SOIL_PIN         = A0;
+const byte SENSOR_POWER_PIN = 8;
+const byte RELAY_PIN        = 7;
+const byte LED_PIN          = LED_BUILTIN;   // pin 13 light on the board
+
+// Most relay modules switch ON with LOW. If the valve is open when it
+// should be closed, change this to false.
+const bool RELAY_ACTIVE_LOW = true;
+
+// Calibration: type c, then write down the raw numbers.
+const int DRY_VALUE = 520;   // sensor in dry garden soil
+const int WET_VALUE = 260;   // sensor in a cup of water
+
+// Moisture targets (percent)
+const int START_WATERING_BELOW = 35;
+const int STOP_WATERING_AT     = 60;
+
+// Timing
+const unsigned long MAX_PULSE_MS  = 30UL * 1000;       // 30 s valve open max
+const unsigned long SOAK_MS       = 60UL * 1000;       // 60 s soak + cool coil
+const unsigned long REST_MS       = 10UL * 60 * 1000;  // 10 min between sessions
+const unsigned long TEST_MS       = 10UL * 1000;       // t command
+const unsigned long READ_EVERY_MS = 5UL * 1000;        // log every 5 s
+
+// Safety limits
+const byte MAX_PULSES_PER_SESSION = 6;
+const byte MAX_PULSES_NO_CHANGE   = 4;
+const int  MIN_RISE_PERCENT       = 2;
+const int  SENSOR_MIN_VALID       = 50;
+const int  SENSOR_MAX_VALID       = 1000;
+
+// ===========================================================
+
+enum State { IDLE, WATERING, SOAKING, RESTING, TESTING, LOCKOUT, CALIBRATE };
+State state = IDLE;
+
+unsigned long stateStart  = 0;
+unsigned long lastRead    = 0;
+unsigned long lastLed     = 0;
+unsigned long totalOpenMs = 0;
+
+int  rawValue = 0;
+int  moisture = 0;
+int  moistureAtPulse = 0;
+byte pulsesThisSession = 0;
+byte pulsesNoChange = 0;
+bool valveOpen = false;
+bool ledOn = false;
+
+const char* stateName(State s) {
+  switch (s) {
+    case IDLE:      return "IDLE";
+    case WATERING:  return "WATERING";
+    case SOAKING:   return "SOAKING";
+    case RESTING:   return "RESTING";
+    case TESTING:   return "TESTING";
+    case LOCKOUT:   return "LOCKOUT";
+    case CALIBRATE: return "CALIBRATE";
+  }
+  return "?";
+}
+
+// ---------------- Valve ----------------
+void setValve(bool open) {
+  if (open == valveOpen) return;
+  if (!open) totalOpenMs += millis() - stateStart;
+  valveOpen = open;
+  bool level = RELAY_ACTIVE_LOW ? !open : open;
+  digitalWrite(RELAY_PIN, level ? HIGH : LOW);
+}
+
+// ---------------- Sensor ----------------
+int readSoilRaw() {
+  digitalWrite(SENSOR_POWER_PIN, HIGH);
+  delay(10);
+  const byte N = 10;
+  int s[N];
+  for (byte i = 0; i &lt; N; i++) { s[i] = analogRead(SOIL_PIN); delay(2); }
+  digitalWrite(SENSOR_POWER_PIN, LOW);
+
+  // sort, then average the middle 6 (drops 2 highest + 2 lowest)
+  for (byte i = 1; i &lt; N; i++) {
+    int key = s[i]; int j = i - 1;
+    while (j &gt;= 0 &amp;&amp; s[j] &gt; key) { s[j + 1] = s[j]; j--; }
+    s[j + 1] = key;
+  }
+  long sum = 0;
+  for (byte i = 2; i &lt; N - 2; i++) sum += s[i];
+  return sum / (N - 4);
+}
+
+int rawToPercent(int raw) {
+  long pct = map(raw, DRY_VALUE, WET_VALUE, 0, 100);
+  return constrain(pct, 0, 100);
+}
+
+// ---------------- States ----------------
+void enterState(State s) {
+  setValve(false);                 // close first, always
+  state = s;
+  stateStart = millis();
+  if (s == WATERING) {
+    moistureAtPulse = moisture;
+    pulsesThisSession++;
+    setValve(true);
+  }
+  if (s == TESTING) setValve(true);
+  Serial.print(F("# -&gt; "));
+  Serial.println(stateName(s));
+}
+
+void lockout(const __FlashStringHelper* why) {
+  enterState(LOCKOUT);
+  Serial.print(F("# SAFETY LOCKOUT: "));
+  Serial.println(why);
+  Serial.println(F("# Fix it, then type r"));
+}
+
+void startSession() {
+  pulsesThisSession = 0;
+  pulsesNoChange = 0;
+  enterState(WATERING);
+}
+
+void endSession() { enterState(RESTING); }
+
+// ---------------- Logging ----------------
+void printHeader() {
+  Serial.println(F("time_s,raw,moisture_pct,state,valve,total_open_s"));
+}
+
+void logLine() {
+  Serial.print(millis() / 1000);   Serial.print(',');
+  Serial.print(rawValue);          Serial.print(',');
+  Serial.print(moisture);          Serial.print(',');
+  Serial.print(stateName(state));  Serial.print(',');
+  Serial.print(valveOpen ? 1 : 0); Serial.print(',');
+  Serial.println(totalOpenMs / 1000);
+}
+
+void printSettings() {
+  Serial.println(F("# ---- Settings ----"));
+  Serial.print(F("# Dry raw / Wet raw: ")); Serial.print(DRY_VALUE);
+  Serial.print(F(" / "));                    Serial.println(WET_VALUE);
+  Serial.print(F("# Water below / stop at %: ")); Serial.print(START_WATERING_BELOW);
+  Serial.print(F(" / "));                          Serial.println(STOP_WATERING_AT);
+  Serial.print(F("# Pulse s / Soak s: ")); Serial.print(MAX_PULSE_MS / 1000);
+  Serial.print(F(" / "));                  Serial.println(SOAK_MS / 1000);
+  Serial.print(F("# Max pulses per session: ")); Serial.println(MAX_PULSES_PER_SESSION);
+  Serial.print(F("# Rest min: ")); Serial.println(REST_MS / 60000);
+}
+
+// ---------------- Commands ----------------
+void handleSerial() {
+  while (Serial.available()) {
+    char c = Serial.read();
+    if (c &gt;= 'A' &amp;&amp; c &lt;= 'Z') c += 32;   // accept capitals
+    switch (c) {
+      case 't':
+        if (state == LOCKOUT) { Serial.println(F("# Locked out. Type r first.")); break; }
+        Serial.println(F("# VALVE TEST 10 s - measure adapter voltage now (want 11V+)"));
+        enterState(TESTING);
+        break;
+      case 'w':
+        if (state == LOCKOUT) { Serial.println(F("# Locked out. Type r first.")); break; }
+        Serial.println(F("# Manual watering"));
+        startSession();
+        break;
+      case 's':
+        Serial.println(F("# Stopped"));
+        endSession();
+        break;
+      case 'c':
+        Serial.println(F("# CALIBRATE: dry soil, then cup of water. Write down raw numbers."));
+        enterState(CALIBRATE);
+        break;
+      case 'n':
+        printHeader();
+        enterState(IDLE);
+        break;
+      case 'r':
+        Serial.println(F("# Reset"));
+        enterState(IDLE);
+        break;
+      case '?':
+        printSettings();
+        break;
+    }
+  }
+}
+
+// ---------------- LED ----------------
+// off = waiting, solid = valve open, slow blink = soak/rest,
+// fast blink = LOCKOUT (needs you), very slow = calibrate
+void updateLed() {
+  unsigned long period;
+  switch (state) {
+    case IDLE:      digitalWrite(LED_PIN, LOW);  return;
+    case WATERING:
+    case TESTING:   digitalWrite(LED_PIN, HIGH); return;
+    case LOCKOUT:   period = 150;  break;
+    case CALIBRATE: period = 1500; break;
+    default:        period = 700;  break;
+  }
+  if (millis() - lastLed &gt;= period) {
+    lastLed = millis();
+    ledOn = !ledOn;
+    digitalWrite(LED_PIN, ledOn ? HIGH : LOW);
+  }
+}
+
+// =========================================================
+void setup() {
+  // Relay OFF before the pin becomes an output -&gt; no click at startup
+  digitalWrite(RELAY_PIN, RELAY_ACTIVE_LOW ? HIGH : LOW);
+  pinMode(RELAY_PIN, OUTPUT);
+  pinMode(SENSOR_POWER_PIN, OUTPUT);
+  digitalWrite(SENSOR_POWER_PIN, LOW);
+  pinMode(LED_PIN, OUTPUT);
+
+  Serial.begin(9600);
+  Serial.println(F("# Automatic Plant Waterer ready. Type ? for settings."));
+  printSettings();
+  printHeader();
+
+  rawValue = readSoilRaw();
+  moisture = rawToPercent(rawValue);
+  enterState(IDLE);
+}
+
+void loop() {
+  unsigned long now = millis();
+  handleSerial();
+  updateLed();
+
+  // ---- Calibration: raw numbers every second ----
+  if (state == CALIBRATE) {
+    if (now - lastRead &gt;= 1000) {
+      lastRead = now;
+      rawValue = readSoilRaw();
+      Serial.print(F("raw="));       Serial.print(rawValue);
+      Serial.print(F("  moisture%=")); Serial.println(rawToPercent(rawValue));
+    }
+    return;
+  }
+
+  // ---- Timers that must run right away (not every 5 s) ----
+  if (state == TESTING &amp;&amp; now - stateStart &gt;= TEST_MS) {
+    Serial.println(F("# Test done. Did it click firmly and flow well? Log it!"));
+    enterState(IDLE);
+  }
+  if (state == WATERING &amp;&amp; now - stateStart &gt;= MAX_PULSE_MS) {
+    enterState(SOAKING);           // hard 30 s limit
+  }
+
+  // ---- Read + log every 5 s ----
+  if (now - lastRead &lt; READ_EVERY_MS) return;
+  lastRead = now;
+  rawValue = readSoilRaw();
+  moisture = rawToPercent(rawValue);
+  logLine();
+
+  if (state == LOCKOUT || state == TESTING) return;
+
+  if (rawValue &lt; SENSOR_MIN_VALID || rawValue &gt; SENSOR_MAX_VALID) {
+    lockout(F("sensor reading out of range - check sensor wires"));
+    return;
+  }
+
+  switch (state) {
+    case IDLE:
+      if (moisture &lt; START_WATERING_BELOW) startSession();
+      break;
+
+    case WATERING:
+      if (moisture &gt;= STOP_WATERING_AT) endSession();
+      break;
+
+    case SOAKING:
+      if (now - stateStart &lt; SOAK_MS) break;
+
+      if (moisture &gt;= STOP_WATERING_AT) {
+        Serial.println(F("# Soil is wet enough"));
+        endSession();
+        break;
+      }
+      if (moisture - moistureAtPulse &gt;= MIN_RISE_PERCENT) {
+        pulsesNoChange = 0;
+      } else {
+        pulsesNoChange++;
+        Serial.print(F("# Pulse did nothing ("));
+        Serial.print(pulsesNoChange); Serial.print('/');
+        Serial.print(MAX_PULSES_NO_CHANGE); Serial.println(')');
+      }
+      if (pulsesNoChange &gt;= MAX_PULSES_NO_CHANGE) {
+        lockout(F("moisture not rising - bucket empty or tube blocked?"));
+      } else if (pulsesThisSession &gt;= MAX_PULSES_PER_SESSION) {
+        Serial.println(F("# Max pulses reached - resting so the valve cools"));
+        endSession();
+      } else {
+        enterState(WATERING);
+      }
+      break;
+
+    case RESTING:
+      if (now - stateStart &gt;= REST_MS) enterState(IDLE);
+      break;
+
+    default:
+      break;
+  }
+}
+</code></pre>
+    </div>
+  </section>
+
+  <section id="results" class="alt">
+    <div class="wrap">
+      <h2>Results</h2>
+      <p class="lead">Fill these in from your logbook after testing.</p>
+      <div class="log">
+        <div class="blank"><h3>Calibration</h3>Dry reading: ____<br>Wet reading: ____</div>
+        <div class="blank"><h3>Valve test</h3>Voltage with valve open: ____ V<br>Did it open firmly? ____</div>
+        <div class="blank"><h3>Watering test</h3>Moisture before: ____ %<br>Moisture after: ____ %</div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <b>Rain Bucket Waterer</b> · A student science fair project · Built with an Arduino Uno
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Same rules as the Arduino code
+  var START = 35, STOP = 60, PULSE = 30, SOAK = 60, REST = 600;
+  var MAX_PULSES = 6, MAX_NO_CHANGE = 4, MIN_RISE = 2;
+  var BUCKET_L = 18;        // about a 5-gallon bucket
+  var FLOW = 0.02;          // litres per second through the valve
+  var PCT_PER_L = 25;       // 1 L raises soil moisture by about 25%
+
+  var s = {
+    moist: 42, pending: 0, bucket: 12, state: "IDLE", t: 0, simTime: 0,
+    pulses: 0, noChange: 0, atPulse: 0, used: 0, open: 0, readClock: 0,
+    paused: false, raining: 0
+  };
+  var $ = function (id) { return document.getElementById(id); };
+  var help = {
+    IDLE: "Waiting. The soil is moist enough, so the valve stays shut.",
+    WATERING: "Valve OPEN. Rainwater is flowing to the plant (30 s max).",
+    SOAKING: "Valve closed. Letting the water soak in and the coil cool (60 s).",
+    RESTING: "Done. Resting 10 minutes before it can water again.",
+    LOCKOUT: "SAFETY LOCKOUT. Watering didn't help, so the bucket is probably empty. Add rain, then press Reset."
+  };
+  var colors = { IDLE: "#5a6876", WATERING: "#0072ce", SOAKING: "#00878f", RESTING: "#3a9d23", LOCKOUT: "#b85c00" };
+
+  function log(msg) {
+    var box = $("serial");
+    var line = document.createElement("div");
+    line.textContent = "[" + Math.floor(s.simTime) + "s] " + msg;
+    box.appendChild(line);
+    while (box.childNodes.length > 80) box.removeChild(box.firstChild);
+    box.scrollTop = box.scrollHeight;
+  }
+  function go(st) {
+    s.state = st; s.t = 0;
+    if (st === "WATERING") { s.pulses++; s.atPulse = s.moist; }
+    log("-> " + st);
+  }
+  function startSession() { s.pulses = 0; s.noChange = 0; go("WATERING"); }
+
+  function step(dt) {
+    s.simTime += dt; s.t += dt;
+    // weather dries the soil
+    var dry = parseFloat($("weather").value);
+    s.moist = Math.max(0, s.moist - dry * dt);
+    // rain fills the bucket
+    if (s.raining > 0) { s.raining -= dt; s.bucket = Math.min(BUCKET_L, s.bucket + 0.15 * dt); }
+    // valve flow
+    if (s.state === "WATERING" && s.bucket > 0) {
+      var w = Math.min(FLOW * dt, s.bucket);
+      s.bucket -= w; s.used += w; s.pending += w * PCT_PER_L;
+    }
+    if (s.state === "WATERING") s.open += dt;
+    // water soaks in slowly, so the sensor lags behind
+    var soak = s.pending * Math.min(1, 0.1 * dt);
+    s.pending -= soak; s.moist = Math.min(100, s.moist + soak);
+
+    if (s.state === "WATERING" && s.t >= PULSE) go("SOAKING");
+
+    // the Arduino reads the sensor every 5 s
+    s.readClock += dt;
+    if (s.readClock < 5) return;
+    s.readClock = 0;
+    var m = Math.round(s.moist);
+    if (s.state === "LOCKOUT") return;
+    if (s.state === "IDLE" && m < START) { log("Soil " + m + "% is below 35%. Watering."); startSession(); }
+    else if (s.state === "WATERING" && m >= STOP) { log("Soil " + m + "%. Wet enough."); go("RESTING"); }
+    else if (s.state === "SOAKING" && s.t >= SOAK) {
+      if (m >= STOP) { log("Soil " + m + "%. Wet enough."); go("RESTING"); return; }
+      if (s.moist - s.atPulse >= MIN_RISE) s.noChange = 0;
+      else { s.noChange++; log("Pulse did nothing (" + s.noChange + "/" + MAX_NO_CHANGE + ")"); }
+      if (s.noChange >= MAX_NO_CHANGE) { go("LOCKOUT"); log("SAFETY LOCKOUT: moisture not rising. Bucket empty?"); }
+      else if (s.pulses >= MAX_PULSES) { log("Max pulses reached. Resting so the valve cools."); go("RESTING"); }
+      else go("WATERING");
+    }
+    else if (s.state === "RESTING" && s.t >= REST) go("IDLE");
+  }
+
+  function mix(a, b, k) {
+    var pa = [parseInt(a.substr(1,2),16), parseInt(a.substr(3,2),16), parseInt(a.substr(5,2),16)];
+    var pb = [parseInt(b.substr(1,2),16), parseInt(b.substr(3,2),16), parseInt(b.substr(5,2),16)];
+    return "rgb(" + pa.map(function (v, i) { return Math.round(v + (pb[i] - v) * k); }).join(",") + ")";
+  }
+
+  function draw() {
+    var m = s.moist, open = s.state === "WATERING", flowing = open && s.bucket > 0.001;
+    $("moistTxt").textContent = Math.round(m) + "%";
+    $("moistFill").style.width = m + "%";
+    $("arduinoPct").textContent = "soil " + Math.round(m) + "%";
+    var bp = s.bucket / BUCKET_L;
+    $("bucketTxt").textContent = s.bucket.toFixed(1) + " L";
+    $("bucketFill").style.width = (bp * 100) + "%";
+    var h = 132 * bp;
+    $("bucketWater").setAttribute("y", 184 - h);
+    $("bucketWater").setAttribute("height", h + 2);
+    $("tubeIn").setAttribute("stroke", s.bucket > 0.001 ? "#4fa3e0" : "#c9d3dc");
+    $("tubeOut").setAttribute("stroke", flowing ? "#4fa3e0" : "#c9d3dc");
+    $("drips").setAttribute("opacity", flowing ? 1 : 0);
+    $("rainDrops").setAttribute("opacity", s.raining > 0 ? 1 : 0);
+    $("valveLight").setAttribute("fill", open ? "#3a9d23" : "#d9534f");
+    $("valveText").textContent = open ? "OPEN" : "CLOSED";
+    $("valveText").setAttribute("fill", open ? "#3a9d23" : "#d9534f");
+    $("soil").setAttribute("fill", mix("#d8b47c", "#3f2614", Math.min(1, m / 80)));
+    var droop = m < 20 ? (20 - m) * 1.2 : 0;
+    $("plant").setAttribute("transform", "rotate(" + droop + " 475 196)");
+    var w = parseFloat($("weather").value);
+    $("weatherIcon").textContent = s.raining > 0 ? "🌧️" : (w < 0.01 ? "☁️" : (w > 0.03 ? "🔥" : "☀️"));
+
+    var b = $("stateBadge");
+    b.textContent = s.state; b.style.background = colors[s.state];
+    $("stateHelp").textContent = help[s.state];
+    $("pulseTxt").textContent = s.pulses + " / " + MAX_PULSES;
+    var left = { WATERING: PULSE, SOAKING: SOAK, RESTING: REST }[s.state];
+    if (left) {
+      var r = Math.max(0, Math.ceil(left - s.t));
+      $("timerTxt").textContent = r >= 60 ? Math.floor(r / 60) + "m " + (r % 60) + "s" : r + " s";
+      $("timerLbl").textContent = s.state.toLowerCase() + " time left";
+    } else { $("timerTxt").textContent = "--"; $("timerLbl").textContent = "time left"; }
+    $("savedTxt").textContent = s.used.toFixed(1) + " L";
+    $("openTxt").textContent = Math.round(s.open) + " s";
+
+    // LED like the real board
+    var led = "#333", now = performance.now();
+    if (open) led = "#ffd23f";
+    else if (s.state === "LOCKOUT") led = Math.floor(now / 150) % 2 ? "#ffd23f" : "#333";
+    else if (s.state === "SOAKING" || s.state === "RESTING") led = Math.floor(now / 700) % 2 ? "#ffd23f" : "#333";
+    $("ledDot").setAttribute("fill", led);
+  }
+
+  var last = performance.now();
+  function frame(now) {
+    var real = Math.min(0.1, (now - last) / 1000); last = now;
+    if (!s.paused) {
+      var sim = real * parseFloat($("speed").value);
+      while (sim > 0) { var d = Math.min(0.25, sim); step(d); sim -= d; }
+    }
+    draw();
+    requestAnimationFrame(frame);
+  }
+
+  $("btnDry").onclick = function () { s.moist = 22; s.pending = 0; log("Soil dried out to 22%."); };
+  $("btnRain").onclick = function () { s.raining = 40; log("It's raining! The bucket is filling."); };
+  $("btnEmpty").onclick = function () { s.bucket = 0; log("Bucket emptied."); };
+  $("btnReset").onclick = function () { s.pulses = 0; s.noChange = 0; log("Reset"); go("IDLE"); };
+  $("btnPause").onclick = function () {
+    s.paused = !s.paused; this.textContent = s.paused ? "▶ Play" : "⏸ Pause";
+  };
+
+  log("Automatic Plant Waterer ready.");
+  requestAnimationFrame(frame);
+})();
+</script>
+<script>
+  document.getElementById("copyBtn").addEventListener("click", function () {
+    var btn = this;
+    var text = document.getElementById("sketch").innerText;
+    function done() { btn.textContent = "Copied!"; setTimeout(function () { btn.textContent = "Copy code"; }, 2000); }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done, fallback);
+    } else { fallback(); }
+    function fallback() {
+      var ta = document.createElement("textarea");
+      ta.value = text; document.body.appendChild(ta); ta.select();
+      try { document.execCommand("copy"); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    }
+  });
+</script>
+</body>
+</html>
