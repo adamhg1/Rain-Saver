@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Rain Bucket Waterer</title>
+<title>RainSaver</title>
 <meta name="description" content="Science fair project: a sensor-controlled, gravity-fed irrigation system that waters a plant with collected rainwater.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -43,6 +43,7 @@
   .titleblock { border-bottom: 1px solid var(--line); padding: 56px 0 40px; }
   .kicker { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); }
   h1 { font-size: clamp(32px, 5vw, 46px); line-height: 1.15; margin: 10px 0 14px; font-weight: 700; color: var(--navy); max-width: 820px; }
+  .subhead { font-size: clamp(20px, 3vw, 26px); font-weight: 500; color: var(--blue); margin: -6px 0 16px; line-height: 1.3; }
   .subtitle { font-size: 20px; color: var(--ink-2); max-width: 760px; margin: 0; }
   .specs { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--line); border-radius: 6px; margin-top: 32px; }
   .specs div { padding: 14px 16px; border-right: 1px solid var(--line); }
@@ -126,22 +127,40 @@
     .specs div:nth-child(-n+2) { border-bottom: 1px solid var(--line); }
     .grid2, .grid3, .sim-top { grid-template-columns: 1fr; }
   }
+  textarea { width: 100%; min-height: 150px; margin-top: 8px; font-family: "IBM Plex Mono", monospace; font-size: 13px; padding: 10px; border: 1px solid var(--line-2); border-radius: 4px; resize: vertical; }
+  .amsg { font-size: 14px; color: var(--muted); }
+  .amsg.err { color: var(--red); }
+  .segs { display: grid; gap: 8px; }
+  .seg { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-size: 15px; }
+  .seg b { min-width: 110px; color: var(--navy); }
+  .ain { font: inherit; font-size: 15px; padding: 5px 8px; border: 1px solid var(--line-2); border-radius: 4px; }
+  ol.refs { padding-left: 0; list-style: none; margin: 0; }
+  ol.refs li { padding-left: 36px; text-indent: -36px; margin-bottom: 12px; overflow-wrap: anywhere; }
+  .specs.six { grid-template-columns: repeat(3, 1fr); }
+  .specs.six div:nth-child(3n) { border-right: 0; }
+  .specs.six div:nth-child(-n+3) { border-bottom: 1px solid var(--line); }
+  @media (max-width: 860px) {
+    .specs.six { grid-template-columns: 1fr 1fr; }
+    .specs.six div { border-right: 1px solid var(--line) !important; border-bottom: 1px solid var(--line); }
+    .specs.six div:nth-child(2n) { border-right: 0 !important; }
+  }
 </style>
 </head>
 <body>
 
 <header class="topbar">
   <div class="wrap">
-    <a class="brand" href="#top">Rain Bucket Waterer</a>
+    <a class="brand" href="#top">RainSaver</a>
     <nav>
       <a href="#purpose">Purpose</a>
       <a href="#design">Design</a>
+      <a href="#logger">Data logger</a>
       <a href="#simulation">Simulation</a>
+      <a href="#analyzer">Log analyzer</a>
       <a href="#materials">Materials</a>
       <a href="#method">Method</a>
-      <a href="#safety">Safety</a>
-      <a href="#code">Code</a>
       <a href="#results">Results</a>
+      <a href="#references">References</a>
     </nav>
   </div>
 </header>
@@ -150,13 +169,14 @@
   <div class="titleblock">
     <div class="wrap">
       <div class="kicker">Science Fair Project</div>
-      <h1>A sensor-controlled, gravity-fed plant watering system using collected rainwater</h1>
+      <h1>RainSaver</h1>
+      <p class="subhead">A Sensor-Controlled Plant Watering System Powered by Rainwater</p>
       <p class="subtitle">An Arduino measures soil moisture and opens a 12&nbsp;V valve only when the plant needs water. The water comes from a raised rain bucket, so no tap water and no pump are used.</p>
       <div class="specs">
         <div><b>35 % → 60 %</b><span>Watering starts / stops</span></div>
         <div><b>30 s max</b><span>Valve open per pulse</span></div>
-        <div><b>5 s</b><span>Sensor sampling interval</span></div>
-        <div><b>0 L</b><span>Tap water used</span></div>
+        <div><b>15 min</b><span>On-board logging interval</span></div>
+        <div><b>~10 days</b><span>Data stored in EEPROM</span></div>
       </div>
     </div>
   </div>
@@ -165,7 +185,8 @@
     <div class="wrap">
       <div class="sec-num">01</div>
       <h2>Purpose</h2>
-      <p class="lead">Garden plants are often watered on a fixed schedule with treated drinking water, whether the soil needs it or not. This wastes water and can over-water the roots. This project tests whether a simple automated system can keep soil moisture in a healthy range using only rainwater.</p>
+      <p class="lead">In Metro Vancouver, daily water use rises by about 50 % in the hot, dry summer months, mostly because of lawn and garden watering (Metro Vancouver, n.d.). Most of that is treated drinking water, applied on a schedule whether the soil needs it or not.</p>
+      <p>Soil moisture sensors offer a way to water only when needed. However, field tests of commercial sensor-based irrigation controllers found that many of them were not precise instruments (Cardenas-Lailhacar &amp; Dukes, 2010), and low-cost capacitive sensors give reliable readings only when they are calibrated for the specific soil they are used in (Placidi et al., 2020). This project builds a low-cost controller, calibrates its sensor for the soil being used, and supplies the water from collected rain instead of the tap.</p>
       <div class="grid2" style="margin-top:20px">
         <div class="box">
           <div class="lbl">Question</div>
@@ -178,9 +199,9 @@
       </div>
       <h3 style="margin-top:28px">Variables</h3>
       <div class="grid3">
-        <div class="box"><div class="lbl">Independent</div><p>Whether watering is automatic (sensor-controlled) or done on a fixed schedule.</p></div>
-        <div class="box"><div class="lbl">Dependent</div><p>Soil moisture (%) over time, and total litres of water used.</p></div>
-        <div class="box"><div class="lbl">Controlled</div><p>Plant type, pot size, soil type, location, bucket height, and tube length.</p></div>
+        <div class="box"><div class="lbl">Independent</div><p>Watering method: automatic (sensor-controlled) or fixed schedule.</p></div>
+        <div class="box"><div class="lbl">Dependent</div><p>Soil moisture (%) over time, and total water used (L).</p></div>
+        <div class="box"><div class="lbl">Controlled</div><p>Plant species, pot size, soil type, location, bucket height, and tube length.</p></div>
       </div>
     </div>
   </section>
@@ -276,9 +297,55 @@
     </div>
   </section>
 
-  <section id="simulation">
+  <section id="logger">
     <div class="wrap">
       <div class="sec-num">03</div>
+      <h2>On-board data logger</h2>
+      <p class="lead">The Arduino records its own data, so the experiment does not depend on a computer staying connected. Records are stored in the EEPROM of the ATmega328P microcontroller, which keeps its contents when power is removed.</p>
+      <div class="grid2">
+        <div class="box">
+          <div class="lbl">How a record is made</div>
+          <p>The sensor is read every 5&nbsp;s. Every 15&nbsp;min, the average of those readings (about 180 samples) is stored as one record, together with a flag showing whether the valve opened during that period. Averaging reduces noise from single readings.</p>
+        </div>
+        <div class="box">
+          <div class="lbl">Storage capacity</div>
+          <p>The ATmega328P has 1,024 bytes of EEPROM (Microchip Technology, 2018). 16 bytes hold the header, leaving 1,008 one-byte records: 1,008 × 15&nbsp;min ≈ 252&nbsp;h, or about 10.5 days. When full, the oldest records are overwritten.</p>
+        </div>
+      </div>
+      <h3 style="margin-top:28px">Record format</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Byte value</th><th>Meaning</th><th>Example</th></tr></thead>
+          <tbody>
+            <tr><td class="k mono">0 – 100</td><td>Average soil moisture (%), valve did not open</td><td class="num">0x2A → 42 %, not watered</td></tr>
+            <tr><td class="k mono">128 – 228</td><td>Average soil moisture + 128 (bit 7 set), valve opened</td><td class="num">0xB9 → 57 %, watered</td></tr>
+            <tr><td class="k mono">254 (0xFE)</td><td>RESTART marker: power was turned on</td><td class="num">new time segment begins</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="callout">
+        <b>Memory endurance.</b> EEPROM cells are rated for at least 100,000 write/erase cycles (Microchip Technology, 2018). The most-written bytes (the header) are updated once per record, 96 times a day, so they would last about 100,000 ÷ 96 ≈ 1,040 days. The code also uses <code>EEPROM.update()</code>, which skips the write if the value has not changed (Arduino, n.d.-b).
+      </div>
+      <h3 style="margin-top:28px">Serial commands (9600 baud)</h3>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Command</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td class="k mono">d</td><td>Print the saved log as comma-separated values (paste into the Log analyzer below or a spreadsheet)</td></tr>
+            <tr><td class="k mono">i</td><td>Show records saved, hours covered, total watering pulses and total valve-open time</td></tr>
+            <tr><td class="k mono">e e</td><td>Erase the log and start a new one (must be typed twice within 15 s)</td></tr>
+            <tr><td class="k mono">t</td><td>Valve test: open for 10 s</td></tr>
+            <tr><td class="k mono">c / n</td><td>Calibration mode (raw readings every second) / back to normal</td></tr>
+            <tr><td class="k mono">w / s / r</td><td>Water now / stop / reset after a lockout</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section id="simulation" class="alt">
+    <div class="wrap">
+      <div class="sec-num">04</div>
       <h2>Interactive simulation</h2>
       <p class="lead">This model runs the same control rules as the Arduino code. Change the conditions and observe how the system responds. The soil absorbs water gradually, so the sensor reading rises after a delay, as it does in a real pot.</p>
 
@@ -385,22 +452,64 @@
     </div>
   </section>
 
+  <section id="analyzer">
+    <div class="wrap">
+      <div class="sec-num">05</div>
+      <h2>Log analyzer</h2>
+      <p class="lead">Type <code>d</code> in the Arduino Serial Monitor, copy the output, and paste it below. The analyzer converts the records to real dates and times, graphs them, and calculates summary statistics. Nothing is uploaded; everything runs in your browser.</p>
+
+      <div class="box">
+        <label for="logIn" style="font-weight:600;color:var(--navy)">1. Paste the Serial Monitor output</label>
+        <textarea id="logIn" spellcheck="false" placeholder="record,power_on,minutes,hours,moisture_pct,watered&#10;RESTART,1,0,0,,&#10;1,1,15,0.25,38,0&#10;..."></textarea>
+        <div class="controls" style="margin:10px 0 0">
+          <button class="primary" id="aRun" type="button">Analyze</button>
+          <button id="aExample" type="button">Load example data</button>
+          <button id="aClear" type="button">Clear</button>
+          <span id="aMsg" class="amsg"></span>
+        </div>
+      </div>
+
+      <div id="aOut" style="display:none">
+        <div class="box" style="margin-top:16px">
+          <div style="font-weight:600;color:var(--navy);margin-bottom:6px">2. Enter when each power-on started</div>
+          <p style="font-size:15px;color:var(--muted)">The Arduino has no clock. Use the times from your logbook. Each RESTART in the log starts a new segment.</p>
+          <div id="segs" class="segs"></div>
+          <div style="margin-top:12px">
+            <label for="aFlow" style="font-size:15px;color:var(--muted)">Measured valve flow rate (mL/s, optional):</label>
+            <input id="aFlow" type="number" min="0" step="0.1" placeholder="e.g. 20" class="ain">
+          </div>
+        </div>
+
+        <div class="specs" id="aStats" style="margin-top:16px"></div>
+
+        <figure style="margin-top:16px">
+          <div class="fig-frame chart-wrap" id="aWrap">
+            <svg id="aChart" viewBox="0 0 900 300" role="img" aria-label="Logged soil moisture over time"></svg>
+            <div class="tip" id="aTip"></div>
+          </div>
+          <figcaption><b>Figure 4.</b> Logged soil moisture (15-min averages) from the Arduino's on-board data log. Shaded bands are periods in which the valve opened. Gaps are power-off periods.</figcaption>
+        </figure>
+        <div class="controls"><button id="aCsv" type="button">Download CSV with dates</button></div>
+      </div>
+    </div>
+  </section>
+
   <section id="materials" class="alt">
     <div class="wrap">
-      <div class="sec-num">04</div>
+      <div class="sec-num">06</div>
       <h2>Materials</h2>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Component</th><th>Specification</th><th>Function</th></tr></thead>
+          <thead><tr><th>Component</th><th>Model / specification</th><th>Function</th></tr></thead>
           <tbody>
-            <tr><td class="k">Microcontroller</td><td>Arduino Uno</td><td>Reads the sensor, runs the control logic and safety limits, logs data over USB.</td></tr>
-            <tr><td class="k">Moisture sensor</td><td>Analog soil sensor, A0</td><td>Measures soil water content. Powered from pin 8 only during readings to reduce corrosion.</td></tr>
-            <tr><td class="k">Relay module</td><td>5 V coil, pin 7</td><td>Lets the 5 V Arduino switch the 12 V valve circuit, keeping the two circuits separate.</td></tr>
-            <tr><td class="k">Solenoid valve</td><td>U.S. Solid USS2-00069, ½″, 12 V DC, normally closed, ~20 W (~1.7 A)</td><td>Opens only while powered. Closes automatically on power loss.</td></tr>
-            <tr><td class="k">Power supply</td><td>12 V DC, 2 A</td><td>Powers the valve coil.</td></tr>
-            <tr><td class="k">Flyback diode</td><td>1N4007</td><td>Absorbs the voltage spike from the valve coil when it switches off.</td></tr>
-            <tr><td class="k">Reservoir</td><td>Bucket with ½″ bulkhead fitting and mesh cover</td><td>Collects rainwater. Mesh keeps out debris and mosquitoes.</td></tr>
-            <tr><td class="k">Plumbing</td><td>½″ brass hose barbs, ½″ ID vinyl tubing, hose clamps, PTFE tape</td><td>Leak-free connections from bucket to valve to pot.</td></tr>
+            <tr><td class="k">Microcontroller</td><td>Arduino Uno R3 (ATmega328P, 16 MHz, 32 KB flash, 2 KB SRAM, 1 KB EEPROM) (Arduino, n.d.-a)</td><td>Reads the sensor, runs the control logic and safety limits, stores the data log.</td></tr>
+            <tr><td class="k">Moisture sensor</td><td>Analog soil moisture sensor, output to A0</td><td>Measures soil water content. Powered from pin 8 only during readings to reduce corrosion.</td></tr>
+            <tr><td class="k">Relay module</td><td>5 V single-channel relay module, input on pin 7</td><td>Lets the 5 V Arduino switch the 12 V valve circuit, keeping the two circuits separate.</td></tr>
+            <tr><td class="k">Solenoid valve</td><td>U.S. Solid USS2-00069, ½″, 12 V DC, normally closed, 20 W (≈ 1.7 A) (U.S. Solid, n.d.)</td><td>Opens only while powered. Closes automatically if power is lost.</td></tr>
+            <tr><td class="k">Power supply</td><td>12 V DC, 2 A adapter with barrel-jack screw terminal</td><td>Powers the valve coil (1.7 A is 85 % of the rated 2 A).</td></tr>
+            <tr><td class="k">Flyback diode</td><td>1N4007, 1 A, 1000 V (Vishay General Semiconductor, 2020)</td><td>Absorbs the voltage spike from the valve coil when it switches off.</td></tr>
+            <tr><td class="k">Reservoir</td><td>Bucket with ½″ barbed bulkhead fitting and mesh cover</td><td>Collects rainwater. Mesh keeps out debris and mosquitoes.</td></tr>
+            <tr><td class="k">Plumbing</td><td>½″ NPT brass hose barbs (2), ½″ ID vinyl tubing, worm-gear hose clamps (4), PTFE tape</td><td>Leak-free connections from bucket to valve to pot.</td></tr>
             <tr><td class="k">Enclosure</td><td>Lidded plastic container</td><td>Keeps the electronics dry.</td></tr>
           </tbody>
         </table>
@@ -410,22 +519,23 @@
 
   <section id="method">
     <div class="wrap">
-      <div class="sec-num">05</div>
+      <div class="sec-num">07</div>
       <h2>Method</h2>
       <ol class="method">
-        <li><b>Calibrate the sensor.</b> Record the raw reading in dry soil and in water. Enter these values as <code>DRY_VALUE</code> and <code>WET_VALUE</code> so readings convert to 0–100 %.</li>
-        <li><b>Test the valve.</b> With the bucket filled and raised, run a 10-second valve test and measure the supply voltage while the valve is open (target ≥ 11 V).</li>
-        <li><b>Check for leaks.</b> Run water through every connection and tighten clamps where needed.</li>
-        <li><b>Run the automatic system.</b> Start with dry soil. Log moisture every 5 s through the Serial Monitor.</li>
-        <li><b>Run a comparison.</b> Water an identical pot on a fixed schedule and record the volume used.</li>
-        <li><b>Analyse.</b> Graph moisture over time for both pots and compare total water used.</li>
+        <li><b>Calibrate the sensor.</b> Use command <code>c</code> to record the raw reading in dry soil and in water. Enter these as <code>DRY_VALUE</code> and <code>WET_VALUE</code> so readings convert to 0–100 %. Calibration is done in the same soil used for the experiment (Placidi et al., 2020).</li>
+        <li><b>Test the valve and power supply.</b> With the bucket filled and raised, run the 10-second valve test (<code>t</code>) and measure the supply voltage while the valve is open. The target is ≥ 11 V.</li>
+        <li><b>Measure the flow rate.</b> Time how long the valve takes to fill a measuring cup and calculate mL per second.</li>
+        <li><b>Check for leaks.</b> Run water through every connection and tighten the clamps where needed.</li>
+        <li><b>Start the log.</b> Type <code>e</code> twice to erase old data, and record the date and time in the logbook. Record the time of every later restart as well.</li>
+        <li><b>Run the experiment.</b> Run the automatic pot and a fixed-schedule pot side by side for at least 7 days. Record the volume of water given to the fixed-schedule pot.</li>
+        <li><b>Retrieve and analyze the data.</b> Type <code>d</code> and <code>i</code>, paste the output into the Log analyzer, and compare time in the target range and total water used.</li>
       </ol>
     </div>
   </section>
 
   <section id="safety" class="alt">
     <div class="wrap">
-      <div class="sec-num">06</div>
+      <div class="sec-num">08</div>
       <h2>Safety and failure handling</h2>
       <div class="table-wrap">
         <table>
@@ -436,6 +546,7 @@
             <tr><td class="k">Loose sensor wire</td><td>Readings outside the valid range (below 50 or above 1000 raw) trigger a lockout instead of watering.</td></tr>
             <tr><td class="k">Over-watering</td><td>Watering stops as soon as moisture reaches 60 %. The valve fails closed if power is lost.</td></tr>
             <tr><td class="k">Water near electricity</td><td>Only 5 V and 12 V DC near the water. Electronics are in a sealed box above the pot, and the wall adapter is kept dry and away from the setup.</td></tr>
+            <tr><td class="k">Data loss</td><td>Records are stored in non-volatile EEPROM, so they survive power loss. Erasing requires typing <code>e</code> twice within 15 s.</td></tr>
             <tr><td class="k">Valve opening at startup</td><td>The relay pin is set to OFF before it is enabled, so the valve cannot open during power-up.</td></tr>
           </tbody>
         </table>
@@ -445,13 +556,15 @@
 
   <section id="code">
     <div class="wrap">
-      <div class="sec-num">07</div>
+      <div class="sec-num">09</div>
       <h2>Arduino code</h2>
-      <p class="lead">Upload with the Arduino IDE (board: Arduino Uno). Open the Serial Monitor at 9600 baud. Each line is comma-separated, so it can be pasted straight into a spreadsheet.</p>
+      <p class="lead">Upload with the Arduino IDE (board: Arduino Uno). Open the Serial Monitor at 9600 baud. Type <code>?</code> for settings and <code>d</code> to print the saved data log.</p>
       <div class="code-head"><span>auto_waterer.ino</span><button id="copyBtn" type="button">Copy</button></div>
       <pre><code id="sketch">/*
-  AUTOMATIC PLANT WATERER - Arduino Uno
-  =====================================
+  RAINSAVER - Arduino Uno
+  ========================
+  A Sensor-Controlled Plant Watering System Powered by Rainwater
+
   Rain bucket (raised) -&gt; bulkhead -&gt; vinyl tube -&gt; brass barb
   -&gt; 12V solenoid valve -&gt; brass barb -&gt; vinyl tube -&gt; plant pot
 
@@ -471,8 +584,6 @@
              relay NO -&gt; valve wire A  (call this one +)
              valve wire B -&gt; 12V -
              1N4007 across valve wires, STRIPE toward valve wire A (+)
-    Both GNDs (Arduino and 12V -) do NOT need to connect; the relay
-    keeps the 12V side separate.
 
   SAFETY FEATURES
     - Valve open 30 s max per pulse, then 60 s soak/cool-down
@@ -481,7 +592,21 @@
     - Lockout if the sensor reading is impossible (loose wire)
     - Valve forced closed at startup
 
+  BUILT-IN DATA LOGGER
+    Every 15 minutes the Arduino saves the AVERAGE soil moisture and
+    whether it watered, in its own memory (EEPROM). The data stays
+    saved even when the power or USB is unplugged.
+    - Holds about 10 days (1000 records). When full, the oldest
+      records are replaced by new ones.
+    - Also saves running totals: watering pulses and valve-open time.
+    - The Arduino has no clock, so WRITE DOWN THE DATE AND TIME
+      when you start a new log (command e e). Each power-on adds a
+      RESTART line, so also note when you unplug/plug it back in.
+
   SERIAL MONITOR (9600 baud) - type a letter and press Enter
+    d = DUMP the saved log as a table (copy it into a spreadsheet)
+    i = log info (how many records, days covered, totals)
+    e = erase the log and start a new one (type e twice to confirm)
     t = valve TEST: opens 10 s (sink test / measure adapter voltage)
     w = water now (one pulse)
     s = stop watering now
@@ -490,6 +615,8 @@
     r = reset after a lockout
     ? = show settings
 */
+
+#include &lt;EEPROM.h&gt;
 
 // ================= SETTINGS YOU CAN CHANGE =================
 
@@ -515,7 +642,11 @@ const unsigned long MAX_PULSE_MS  = 30UL * 1000;       // 30 s valve open max
 const unsigned long SOAK_MS       = 60UL * 1000;       // 60 s soak + cool coil
 const unsigned long REST_MS       = 10UL * 60 * 1000;  // 10 min between sessions
 const unsigned long TEST_MS       = 10UL * 1000;       // t command
-const unsigned long READ_EVERY_MS = 5UL * 1000;        // log every 5 s
+const unsigned long READ_EVERY_MS = 5UL * 1000;        // read + print every 5 s
+
+// Data logger: minutes between saved records.
+// 15 min -&gt; about 10 days of storage. 30 min -&gt; about 21 days.
+const byte LOG_EVERY_MIN = 15;
 
 // Safety limits
 const byte MAX_PULSES_PER_SESSION = 6;
@@ -526,13 +657,43 @@ const int  SENSOR_MAX_VALID       = 1000;
 
 // ===========================================================
 
+// ---------------- EEPROM layout ----------------
+// bytes 0-15  : header (see below)
+// bytes 16-end: one byte per record
+//   0-100  = average moisture %, bit 7 (+128) set if it watered
+//   0xFE   = RESTART marker (power was turned on)
+const int  ADDR_MAGIC    = 0;    // 2 bytes: 'R','S'
+const int  ADDR_HEAD     = 2;    // uint16: where the next record goes
+const int  ADDR_COUNT    = 4;    // uint16: number of records stored
+const int  ADDR_OPEN_S   = 6;    // uint32: total valve-open seconds
+const int  ADDR_PULSES   = 10;   // uint16: total watering pulses
+const int  ADDR_INTERVAL = 12;   // byte  : LOG_EVERY_MIN used for this log
+const int  DATA_START    = 16;
+const byte MARK_RESTART  = 0xFE;
+const byte WATERED_BIT   = 0x80;
+
+uint16_t logCapacity;     // set in setup from EEPROM size
+uint16_t logHead = 0;
+uint16_t logCount = 0;
+uint32_t savedOpenS = 0;   // valve-open seconds before this power-on
+uint16_t savedPulses = 0;  // pulses before this power-on
+
+// averaging for the current 15-minute record
+long          logSum = 0;
+unsigned int  logSamples = 0;
+bool          logWatered = false;
+unsigned long lastLogWrite = 0;
+uint16_t      pulsesSinceBoot = 0;
+
+// ---------------- controller ----------------
 enum State { IDLE, WATERING, SOAKING, RESTING, TESTING, LOCKOUT, CALIBRATE };
 State state = IDLE;
 
 unsigned long stateStart  = 0;
 unsigned long lastRead    = 0;
 unsigned long lastLed     = 0;
-unsigned long totalOpenMs = 0;
+unsigned long totalOpenMs = 0;    // since power-on
+unsigned long eraseAsked  = 0;
 
 int  rawValue = 0;
 int  moisture = 0;
@@ -555,16 +716,124 @@ const char* stateName(State s) {
   return "?";
 }
 
-// ---------------- Valve ----------------
+// ================= DATA LOGGER =================
+void logSaveHeader() {
+  EEPROM.put(ADDR_HEAD, logHead);
+  EEPROM.put(ADDR_COUNT, logCount);
+  EEPROM.put(ADDR_OPEN_S, (uint32_t)(savedOpenS + totalOpenMs / 1000));
+  EEPROM.put(ADDR_PULSES, (uint16_t)(savedPulses + pulsesSinceBoot));
+}
+
+void logWriteByte(byte b) {
+  EEPROM.update(DATA_START + logHead, b);
+  logHead = (logHead + 1) % logCapacity;
+  if (logCount &lt; logCapacity) logCount++;
+  logSaveHeader();
+}
+
+void logErase() {
+  EEPROM.update(ADDR_MAGIC, 'R');
+  EEPROM.update(ADDR_MAGIC + 1, 'S');
+  EEPROM.update(ADDR_INTERVAL, LOG_EVERY_MIN);
+  logHead = 0; logCount = 0;
+  savedOpenS = 0; savedPulses = 0;
+  totalOpenMs = 0;
+  pulsesSinceBoot = 0;
+  logSum = 0; logSamples = 0; logWatered = false;
+  lastLogWrite = millis();
+  logSaveHeader();
+}
+
+void logBegin() {
+  logCapacity = EEPROM.length() - DATA_START;
+  if (EEPROM.read(ADDR_MAGIC) != 'R' || EEPROM.read(ADDR_MAGIC + 1) != 'S') {
+    logErase();                       // first time ever: set up a new log
+    Serial.println(F("# New data log created."));
+  } else {
+    EEPROM.get(ADDR_HEAD, logHead);
+    EEPROM.get(ADDR_COUNT, logCount);
+    EEPROM.get(ADDR_OPEN_S, savedOpenS);
+    EEPROM.get(ADDR_PULSES, savedPulses);
+    if (logHead &gt;= logCapacity || logCount &gt; logCapacity) logErase();
+  }
+  logWriteByte(MARK_RESTART);          // mark this power-on
+  lastLogWrite = millis();
+}
+
+// called every 5 s with the new reading
+void logAddSample(int pct) {
+  logSum += pct;
+  logSamples++;
+  if (millis() - lastLogWrite &lt; (unsigned long)LOG_EVERY_MIN * 60000UL) return;
+  lastLogWrite = millis();
+  byte avg = logSamples ? (byte)(logSum / logSamples) : (byte)pct;
+  if (avg &gt; 100) avg = 100;
+  logWriteByte(avg | (logWatered ? WATERED_BIT : 0));
+  logSum = 0; logSamples = 0; logWatered = false;
+}
+
+void logInfo() {
+  byte interval = EEPROM.read(ADDR_INTERVAL);
+  uint16_t records = 0;
+  for (uint16_t k = 0; k &lt; logCount; k++) {
+    uint16_t idx = (logHead + logCapacity - logCount + k) % logCapacity;
+    if (EEPROM.read(DATA_START + idx) != MARK_RESTART) records++;
+  }
+  Serial.println(F("# ---- Data log ----"));
+  Serial.print(F("# Records saved: ")); Serial.print(records);
+  Serial.print(F(" of about ")); Serial.println(logCapacity);
+  Serial.print(F("# One record every ")); Serial.print(interval); Serial.println(F(" min"));
+  Serial.print(F("# Time covered: ")); Serial.print((records * (unsigned long)interval) / 60.0, 1);
+  Serial.println(F(" hours"));
+  Serial.print(F("# Total watering pulses: ")); Serial.println(savedPulses + pulsesSinceBoot);
+  Serial.print(F("# Total valve-open time: ")); Serial.print(savedOpenS + totalOpenMs / 1000);
+  Serial.println(F(" s"));
+  Serial.print(F("# Next record in: "));
+  Serial.print(((unsigned long)LOG_EVERY_MIN * 60000UL - (millis() - lastLogWrite)) / 1000);
+  Serial.println(F(" s"));
+}
+
+void logDump() {
+  byte interval = EEPROM.read(ADDR_INTERVAL);
+  Serial.println(F("# ===== RAINSAVER DATA LOG ====="));
+  Serial.println(F("# Copy everything from 'record' down to END into a spreadsheet."));
+  Serial.println(F("# minutes = time since that power-on. RESTART = power was turned on."));
+  Serial.println(F("record,power_on,minutes,hours,moisture_pct,watered"));
+  uint16_t rec = 0, powerOn = 0;
+  unsigned long minutes = 0;
+  for (uint16_t k = 0; k &lt; logCount; k++) {
+    uint16_t idx = (logHead + logCapacity - logCount + k) % logCapacity;
+    byte b = EEPROM.read(DATA_START + idx);
+    if (b == MARK_RESTART) {
+      powerOn++;
+      minutes = 0;
+      Serial.print(F("RESTART,")); Serial.print(powerOn); Serial.println(F(",0,0,,"));
+      continue;
+    }
+    minutes += interval;
+    rec++;
+    Serial.print(rec);                   Serial.print(',');
+    Serial.print(powerOn);               Serial.print(',');
+    Serial.print(minutes);               Serial.print(',');
+    Serial.print(minutes / 60.0, 2);     Serial.print(',');
+    Serial.print(b &amp; 0x7F);              Serial.print(',');
+    Serial.println((b &amp; WATERED_BIT) ? 1 : 0);
+  }
+  Serial.println(F("END"));
+  logInfo();
+}
+
+// ================= VALVE =================
 void setValve(bool open) {
   if (open == valveOpen) return;
   if (!open) totalOpenMs += millis() - stateStart;
   valveOpen = open;
+  if (open) logWatered = true;
   bool level = RELAY_ACTIVE_LOW ? !open : open;
   digitalWrite(RELAY_PIN, level ? HIGH : LOW);
 }
 
-// ---------------- Sensor ----------------
+// ================= SENSOR =================
 int readSoilRaw() {
   digitalWrite(SENSOR_POWER_PIN, HIGH);
   delay(10);
@@ -589,7 +858,7 @@ int rawToPercent(int raw) {
   return constrain(pct, 0, 100);
 }
 
-// ---------------- States ----------------
+// ================= STATES =================
 void enterState(State s) {
   setValve(false);                 // close first, always
   state = s;
@@ -597,6 +866,7 @@ void enterState(State s) {
   if (s == WATERING) {
     moistureAtPulse = moisture;
     pulsesThisSession++;
+    pulsesSinceBoot++;
     setValve(true);
   }
   if (s == TESTING) setValve(true);
@@ -619,7 +889,7 @@ void startSession() {
 
 void endSession() { enterState(RESTING); }
 
-// ---------------- Logging ----------------
+// ================= LIVE OUTPUT =================
 void printHeader() {
   Serial.println(F("time_s,raw,moisture_pct,state,valve,total_open_s"));
 }
@@ -643,14 +913,34 @@ void printSettings() {
   Serial.print(F(" / "));                  Serial.println(SOAK_MS / 1000);
   Serial.print(F("# Max pulses per session: ")); Serial.println(MAX_PULSES_PER_SESSION);
   Serial.print(F("# Rest min: ")); Serial.println(REST_MS / 60000);
+  Serial.print(F("# Log every min: ")); Serial.println(LOG_EVERY_MIN);
+  Serial.println(F("# Commands: d dump log, i log info, e erase log, t test, w water,"));
+  Serial.println(F("#           s stop, c calibrate, n normal, r reset, ? settings"));
 }
 
-// ---------------- Commands ----------------
+// ================= COMMANDS =================
 void handleSerial() {
   while (Serial.available()) {
     char c = Serial.read();
     if (c &gt;= 'A' &amp;&amp; c &lt;= 'Z') c += 32;   // accept capitals
+    if (c != 'e' &amp;&amp; c != '\n' &amp;&amp; c != '\r') eraseAsked = 0;
     switch (c) {
+      case 'd':
+        logDump();
+        break;
+      case 'i':
+        logInfo();
+        break;
+      case 'e':
+        if (eraseAsked &amp;&amp; millis() - eraseAsked &lt; 15000) {
+          logErase();
+          eraseAsked = 0;
+          Serial.println(F("# Log ERASED. New log started. Write down today's date and time!"));
+        } else {
+          eraseAsked = millis();
+          Serial.println(F("# Erase the whole data log? Type e again within 15 s to confirm."));
+        }
+        break;
       case 't':
         if (state == LOCKOUT) { Serial.println(F("# Locked out. Type r first.")); break; }
         Serial.println(F("# VALVE TEST 10 s - measure adapter voltage now (want 11V+)"));
@@ -684,7 +974,7 @@ void handleSerial() {
   }
 }
 
-// ---------------- LED ----------------
+// ================= LED =================
 // off = waiting, solid = valve open, slow blink = soak/rest,
 // fast blink = LOCKOUT (needs you), very slow = calibrate
 void updateLed() {
@@ -714,8 +1004,10 @@ void setup() {
   pinMode(LED_PIN, OUTPUT);
 
   Serial.begin(9600);
-  Serial.println(F("# Automatic Plant Waterer ready. Type ? for settings."));
+  Serial.println(F("# RainSaver ready. Type ? for settings, d to see the saved log."));
+  logBegin();
   printSettings();
+  logInfo();
   printHeader();
 
   rawValue = readSoilRaw();
@@ -728,7 +1020,7 @@ void loop() {
   handleSerial();
   updateLed();
 
-  // ---- Calibration: raw numbers every second ----
+  // ---- Calibration: raw numbers every second (not logged) ----
   if (state == CALIBRATE) {
     if (now - lastRead &gt;= 1000) {
       lastRead = now;
@@ -748,12 +1040,13 @@ void loop() {
     enterState(SOAKING);           // hard 30 s limit
   }
 
-  // ---- Read + log every 5 s ----
+  // ---- Read, print and log every 5 s ----
   if (now - lastRead &lt; READ_EVERY_MS) return;
   lastRead = now;
   rawValue = readSoilRaw();
   moisture = rawToPercent(rawValue);
   logLine();
+  logAddSample(moisture);
 
   if (state == LOCKOUT || state == TESTING) return;
 
@@ -809,22 +1102,24 @@ void loop() {
     </div>
   </section>
 
-  <section id="results">
+  <section id="results" class="alt">
     <div class="wrap">
-      <div class="sec-num">08</div>
+      <div class="sec-num">10</div>
       <h2>Results</h2>
       <p class="lead">Measured values from testing.</p>
       <div class="table-wrap">
         <table>
           <thead><tr><th>Measurement</th><th>Value</th><th>Notes</th></tr></thead>
           <tbody>
-            <tr><td class="k">Sensor raw, dry soil</td><td class="num"><span class="blank"></span></td><td></td></tr>
-            <tr><td class="k">Sensor raw, water</td><td class="num"><span class="blank"></span></td><td></td></tr>
+            <tr><td class="k">Sensor raw, dry soil</td><td class="num"><span class="blank"></span></td><td>Calibration</td></tr>
+            <tr><td class="k">Sensor raw, water</td><td class="num"><span class="blank"></span></td><td>Calibration</td></tr>
             <tr><td class="k">Supply voltage, valve open</td><td class="num"><span class="blank"></span> V</td><td>Target ≥ 11 V</td></tr>
-            <tr><td class="k">Moisture before watering</td><td class="num"><span class="blank"></span> %</td><td></td></tr>
-            <tr><td class="k">Moisture after watering</td><td class="num"><span class="blank"></span> %</td><td></td></tr>
-            <tr><td class="k">Water used, automatic</td><td class="num"><span class="blank"></span> L</td><td></td></tr>
-            <tr><td class="k">Water used, fixed schedule</td><td class="num"><span class="blank"></span> L</td><td></td></tr>
+            <tr><td class="k">Valve flow rate</td><td class="num"><span class="blank"></span> mL/s</td><td>Timed with a measuring cup</td></tr>
+            <tr><td class="k">Logging period</td><td class="num"><span class="blank"></span> days</td><td>From the Log analyzer</td></tr>
+            <tr><td class="k">Time in target range (35–60 %)</td><td class="num"><span class="blank"></span> %</td><td>From the Log analyzer</td></tr>
+            <tr><td class="k">Watering events</td><td class="num"><span class="blank"></span></td><td>From the Log analyzer</td></tr>
+            <tr><td class="k">Water used, automatic</td><td class="num"><span class="blank"></span> L</td><td>Valve-open time × flow rate</td></tr>
+            <tr><td class="k">Water used, fixed schedule</td><td class="num"><span class="blank"></span> L</td><td>Measured</td></tr>
           </tbody>
         </table>
       </div>
@@ -832,12 +1127,228 @@ void loop() {
       <p style="color:var(--muted)">To be completed after testing.</p>
     </div>
   </section>
+
+  <section id="references">
+    <div class="wrap">
+      <div class="sec-num">11</div>
+      <h2>References</h2>
+      <ol class="refs">
+        <li>Arduino. (n.d.-a). <i>UNO R3</i> [Hardware documentation]. Retrieved November 18, 2026, from https://docs.arduino.cc/hardware/uno-rev3/</li>
+        <li>Arduino. (n.d.-b). <i>EEPROM library</i>. Retrieved November 18, 2026, from https://docs.arduino.cc/learn/built-in-libraries/eeprom/</li>
+        <li>Cardenas-Lailhacar, B., &amp; Dukes, M. D. (2010). Precision of soil moisture sensor irrigation controllers under field conditions. <i>Agricultural Water Management, 97</i>(5), 666–672. https://doi.org/10.1016/j.agwat.2009.12.009</li>
+        <li>Metro Vancouver. (n.d.). <i>Water use changes with the seasons</i>. Retrieved November 18, 2026, from https://www.metrovancouver.org/welovewater/why-conserve-water</li>
+        <li>Microchip Technology. (2018). <i>ATmega48A/PA/88A/PA/168A/PA/328/P megaAVR data sheet</i> (DS40002061A). https://www.microchip.com/en-us/product/atmega328p</li>
+        <li>Placidi, P., Gasperini, L., Grassi, A., Cecconi, M., &amp; Scorzoni, A. (2020). Characterization of low-cost capacitive soil moisture sensors for IoT networks. <i>Sensors, 20</i>(12), Article 3585. https://doi.org/10.3390/s20123585</li>
+        <li>U.S. Solid. (n.d.). <i>1/2" stainless steel electric solenoid valve, 12V DC, normally closed</i> [Product page]. Retrieved November 18, 2026, from https://ussolid.com/1-2-stainless-steel-electric-solenoid-valve-12v-dc-normally-closed.html</li>
+        <li>Vishay General Semiconductor. (2020). <i>1N4001 thru 1N4007 general purpose plastic rectifier</i> (Document No. 88503) [Data sheet]. https://www.vishay.com/en/product/88503/</li>
+      </ol>
+    </div>
+  </section>
+
 </main>
 
 <footer>
-  <div class="wrap">Rain Bucket Waterer · Science fair project · Arduino Uno</div>
+  <div class="wrap">RainSaver · A Sensor-Controlled Plant Watering System Powered by Rainwater · Science fair project, 2026</div>
 </footer>
 
+<script>
+(function () {
+  var $ = function (id) { return document.getElementById(id); };
+  var parsed = null;   // {interval, segs:[{n, recs:[{rec,min,m,w}]}], pulses, openS}
+  var points = [];     // {ts, m, w, seg}
+
+  function pad(n) { return (n < 10 ? "0" : "") + n; }
+  function fmtDate(ts) { var d = new Date(ts); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + " " + pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+  function toLocalInput(ts) { var d = new Date(ts); return d.getFullYear() + "-" + pad(d.getMonth() + 1) + "-" + pad(d.getDate()) + "T" + pad(d.getHours()) + ":" + pad(d.getMinutes()); }
+  function msg(t, err) { $("aMsg").textContent = t; $("aMsg").className = "amsg" + (err ? " err" : ""); }
+
+  function parse(text) {
+    var lines = text.split(/\r?\n/), out = { interval: 15, segs: [], pulses: null, openS: null };
+    var seg = null, started = false;
+    lines.forEach(function (raw) {
+      var l = raw.trim();
+      var mI = l.match(/One record every (\d+) min/); if (mI) out.interval = +mI[1];
+      var mP = l.match(/Total watering pulses:\s*(\d+)/); if (mP) out.pulses = +mP[1];
+      var mO = l.match(/Total valve-open time:\s*(\d+)/); if (mO) out.openS = +mO[1];
+      if (/^record,power_on/.test(l)) { started = true; return; }
+      if (!started) return;
+      if (/^END/.test(l)) { started = false; return; }
+      var p = l.split(",");
+      if (p[0] === "RESTART") { seg = { n: +p[1], recs: [] }; out.segs.push(seg); return; }
+      if (p.length >= 6 && /^\d+$/.test(p[0])) {
+        if (!seg) { seg = { n: +p[1] || 1, recs: [] }; out.segs.push(seg); }
+        seg.recs.push({ rec: +p[0], min: +p[2], m: +p[4], w: +p[5] });
+      }
+    });
+    out.segs = out.segs.filter(function (s) { return s.recs.length; });
+    return out;
+  }
+
+  function buildSegInputs() {
+    var box = $("segs"); box.innerHTML = "";
+    var t = Date.now();
+    var total = parsed.segs.reduce(function (a, s) { return a + s.recs[s.recs.length - 1].min; }, 0);
+    var start = t - total * 60000; start -= start % 60000;
+    parsed.segs.forEach(function (s, i) {
+      var row = document.createElement("div"); row.className = "seg";
+      var b = document.createElement("b"); b.textContent = "Power-on " + s.n;
+      var inp = document.createElement("input"); inp.type = "datetime-local"; inp.className = "ain"; inp.id = "seg" + i;
+      inp.value = toLocalInput(start);
+      var sp = document.createElement("span"); sp.style.color = "var(--muted)";
+      var last = s.recs[s.recs.length - 1].min;
+      sp.textContent = s.recs.length + " records, " + (last / 60).toFixed(1) + " h";
+      inp.onchange = compute;
+      row.appendChild(b); row.appendChild(inp); row.appendChild(sp); box.appendChild(row);
+      start += last * 60000;
+    });
+  }
+
+  function compute() {
+    points = [];
+    parsed.segs.forEach(function (s, i) {
+      var v = $("seg" + i).value, t0 = v ? new Date(v).getTime() : NaN;
+      if (isNaN(t0)) return;
+      s.recs.forEach(function (r) { points.push({ ts: t0 + r.min * 60000, m: r.m, w: r.w, seg: s.n, min: r.min }); });
+    });
+    points.sort(function (a, b) { return a.ts - b.ts; });
+    stats(); draw();
+  }
+
+  function stats() {
+    var n = points.length; if (!n) return;
+    var sum = 0, inR = 0, below = 0, above = 0, mn = 101, mx = -1, events = 0, prevW = 0, hours = n * parsed.interval / 60;
+    points.forEach(function (p) {
+      sum += p.m; mn = Math.min(mn, p.m); mx = Math.max(mx, p.m);
+      if (p.m < 35) below++; else if (p.m > 60) above++; else inR++;
+      if (p.w && !prevW) events++; prevW = p.w;
+    });
+    var flow = parseFloat($("aFlow").value), water = "--";
+    if (parsed.openS !== null && flow > 0) water = (parsed.openS * flow / 1000).toFixed(2) + " L";
+    var cells = [
+      [(hours / 24).toFixed(2) + " d", "Logged time (" + n + " records)"],
+      [(sum / n).toFixed(1) + " %", "Mean moisture (min " + mn + ", max " + mx + ")"],
+      [(100 * inR / n).toFixed(1) + " %", "Time in target range 35–60 %"],
+      [(100 * below / n).toFixed(1) + " %", "Time below 35 % (too dry)"],
+      [events + "", "Watering events" + (parsed.pulses !== null ? " (" + parsed.pulses + " pulses)" : "")],
+      [water, parsed.openS !== null ? "Water used (" + parsed.openS + " s valve open)" : "Water used (paste i output too)"]
+    ];
+    var el = $("aStats"); el.className = "specs six"; el.innerHTML = "";
+    cells.forEach(function (c) {
+      var d = document.createElement("div"), b = document.createElement("b"), s = document.createElement("span");
+      b.textContent = c[0]; s.textContent = c[1]; d.appendChild(b); d.appendChild(s); el.appendChild(d);
+    });
+  }
+
+  // ---- chart ----
+  var NS = "http://www.w3.org/2000/svg", svg = $("aChart");
+  var C = { l: 52, r: 30, t: 16, b: 42, w: 900, h: 300 }, pw = C.w - C.l - C.r, ph = C.h - C.t - C.b;
+  var t0 = 0, t1 = 1;
+  function el(tag, a, parent) { var e = document.createElementNS(NS, tag); for (var k in a) e.setAttribute(k, a[k]); (parent || svg).appendChild(e); return e; }
+  function yOf(v) { return C.t + ph - v / 100 * ph; }
+  function xOf(t) { return C.l + (t - t0) / (t1 - t0) * pw; }
+
+  function draw() {
+    while (svg.firstChild) svg.removeChild(svg.firstChild);
+    if (!points.length) return;
+    var iv = parsed.interval * 60000;
+    t0 = points[0].ts - iv; t1 = points[points.length - 1].ts;
+    [0, 20, 40, 60, 80, 100].forEach(function (v) {
+      el("line", { x1: C.l, x2: C.l + pw, y1: yOf(v), y2: yOf(v), stroke: "#eef1f4" });
+      el("text", { x: C.l - 8, y: yOf(v) + 4, "text-anchor": "end", "font-size": 12, fill: "#66737f", "font-family": "IBM Plex Mono, monospace" }).textContent = v;
+    });
+    el("text", { x: 14, y: C.t + ph / 2, "text-anchor": "middle", "font-size": 12, fill: "#66737f", transform: "rotate(-90 14 " + (C.t + ph / 2) + ")" }).textContent = "Soil moisture (%)";
+    points.forEach(function (p) {
+      if (!p.w) return;
+      var a = xOf(p.ts - iv), b = xOf(p.ts);
+      el("rect", { x: a, y: C.t, width: Math.max(1.5, b - a), height: ph, fill: "#3d8fd1", opacity: 0.16 });
+    });
+    [[35, "start 35 %"], [60, "stop 60 %"]].forEach(function (d) {
+      el("line", { x1: C.l, x2: C.l + pw, y1: yOf(d[0]), y2: yOf(d[0]), stroke: "#3d4b5a", "stroke-dasharray": "5 4" });
+      el("text", { x: C.l + pw - 4, y: yOf(d[0]) - 6, "text-anchor": "end", "font-size": 12, fill: "#3d4b5a" }).textContent = d[1];
+    });
+    el("line", { x1: C.l, x2: C.l + pw, y1: C.t + ph, y2: C.t + ph, stroke: "#c3ccd5" });
+    var d = "", prev = null;
+    points.forEach(function (p) {
+      var gap = !prev || p.seg !== prev.seg || p.ts - prev.ts > iv * 1.5;
+      d += (gap ? "M" : "L") + xOf(p.ts).toFixed(1) + " " + yOf(p.m).toFixed(1); prev = p;
+    });
+    el("path", { d: d, fill: "none", stroke: "#0063b1", "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round" });
+    var span = t1 - t0, steps = [3600e3, 3 * 3600e3, 6 * 3600e3, 12 * 3600e3, 86400e3, 2 * 86400e3];
+    var st = steps.find(function (s) { return span / s <= 8; }) || 4 * 86400e3;
+    var tzOff = new Date().getTimezoneOffset() * 60000;
+    for (var t = Math.ceil((t0 - tzOff) / st) * st + tzOff; t <= t1; t += st) {
+      var dt = new Date(t), lbl = st >= 86400e3 ? (dt.getMonth() + 1) + "/" + dt.getDate() : (dt.getHours() === 0 ? (dt.getMonth() + 1) + "/" + dt.getDate() : pad(dt.getHours()) + ":00");
+      el("line", { x1: xOf(t), x2: xOf(t), y1: C.t + ph, y2: C.t + ph + 5, stroke: "#c3ccd5" });
+      el("text", { x: xOf(t), y: C.t + ph + 19, "text-anchor": "middle", "font-size": 12, fill: "#66737f", "font-family": "IBM Plex Mono, monospace" }).textContent = lbl;
+    }
+    el("text", { x: C.l + pw / 2, y: C.h - 4, "text-anchor": "middle", "font-size": 12, fill: "#66737f" }).textContent = "Date / time";
+    cross = el("line", { y1: C.t, y2: C.t + ph, stroke: "#3d4b5a", opacity: 0 });
+    dot = el("circle", { r: 5, fill: "#0063b1", stroke: "#fff", "stroke-width": 2, opacity: 0 });
+  }
+  var cross, dot;
+  svg.addEventListener("mousemove", function (e) {
+    if (!points.length) return;
+    var r = svg.getBoundingClientRect(), x = (e.clientX - r.left) / r.width * C.w, best = points[0], bd = 1e9;
+    points.forEach(function (p) { var dd = Math.abs(xOf(p.ts) - x); if (dd < bd) { bd = dd; best = p; } });
+    var px = xOf(best.ts), py = yOf(best.m), sc = r.width / C.w, tip = $("aTip");
+    cross.setAttribute("x1", px); cross.setAttribute("x2", px); cross.setAttribute("opacity", 1);
+    dot.setAttribute("cx", px); dot.setAttribute("cy", py); dot.setAttribute("opacity", 1);
+    tip.style.display = "block";
+    tip.textContent = fmtDate(best.ts) + "  ·  " + best.m + " %" + (best.w ? "  ·  watered" : "");
+    var left = 16 + px * sc + 12;
+    if (left + tip.offsetWidth > $("aWrap").clientWidth) left = 16 + px * sc - tip.offsetWidth - 12;
+    tip.style.left = left + "px"; tip.style.top = Math.max(0, 16 + py * sc - 34) + "px";
+  });
+  svg.addEventListener("mouseleave", function () { if (cross) { cross.setAttribute("opacity", 0); dot.setAttribute("opacity", 0); } $("aTip").style.display = "none"; });
+
+  function run() {
+    var text = $("logIn").value;
+    parsed = parse(text);
+    if (!parsed.segs.length) { $("aOut").style.display = "none"; msg("No log records found. Paste everything from the 'record,power_on...' line down to END.", true); return; }
+    var n = parsed.segs.reduce(function (a, s) { return a + s.recs.length; }, 0);
+    msg(n + " records in " + parsed.segs.length + " power-on segment(s) loaded.");
+    $("aOut").style.display = "block";
+    buildSegInputs(); compute();
+  }
+
+  function example() {
+    // Synthetic example: 4 days, one restart. Clearly labelled as example data.
+    var lines = ["# ===== RAINSAVER DATA LOG (EXAMPLE DATA) =====", "record,power_on,minutes,hours,moisture_pct,watered"];
+    var m = 52, rec = 0, seed = 7;
+    function rnd() { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; }
+    [[1, 230], [2, 150]].forEach(function (sg) {
+      lines.push("RESTART," + sg[0] + ",0,0,,");
+      for (var k = 1; k <= sg[1]; k++) {
+        var hour = ((k * 15) / 60 + 8) % 24, sun = hour > 10 && hour < 19 ? 0.55 : 0.12;
+        var w = 0;
+        m -= sun + rnd() * 0.15;
+        var logged = m;
+        if (m < 35) { w = 1; logged = m + 4; m += 21 + rnd() * 4; }
+        rec++;
+        lines.push(rec + "," + sg[0] + "," + k * 15 + "," + (k * 15 / 60).toFixed(2) + "," + Math.round(Math.min(logged, m)) + "," + w);
+      }
+    });
+    lines.push("END", "# ---- Data log ----", "# One record every 15 min", "# Total watering pulses: 23", "# Total valve-open time: 652 s");
+    $("logIn").value = lines.join("\n");
+    run();
+    msg("Example data loaded (made up for demonstration, not real measurements).");
+  }
+
+  function csv() {
+    var out = ["date_time,power_on,minutes_since_power_on,moisture_pct,watered"];
+    points.forEach(function (p) { out.push(fmtDate(p.ts) + "," + p.seg + "," + p.min + "," + p.m + "," + p.w); });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([out.join("\n") + "\n"], { type: "text/csv" }));
+    a.download = "rainsaver_log.csv"; document.body.appendChild(a); a.click(); a.remove();
+  }
+
+  $("aRun").onclick = run;
+  $("aExample").onclick = example;
+  $("aClear").onclick = function () { $("logIn").value = ""; $("aOut").style.display = "none"; msg(""); };
+  $("aFlow").oninput = stats;
+  $("aCsv").onclick = csv;
+})();
+</script>
 <script>
 (function () {
   var START = 35, STOP = 60, PULSE = 30, SOAK = 60, REST = 600;
@@ -1046,7 +1557,7 @@ void loop() {
   $("bReset").onclick = function () { s.pulses = 0; s.noChange = 0; log("reset"); go("IDLE"); };
   $("bPause").onclick = function () { s.paused = !s.paused; this.textContent = s.paused ? "Resume" : "Pause"; };
 
-  log("Automatic Plant Waterer ready");
+  log("RainSaver ready");
   data.push({ t: 0, m: s.moist, open: false });
   requestAnimationFrame(frame);
 })();
