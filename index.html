@@ -144,6 +144,11 @@
     .specs.six div { border-right: 1px solid var(--line) !important; border-bottom: 1px solid var(--line); }
     .specs.six div:nth-child(2n) { border-right: 0 !important; }
   }
+  .specs.three { grid-template-columns: repeat(3, 1fr); }
+  .specs.three div:nth-child(3) { border-right: 0; }
+  a.dl { display: inline-block; background: var(--navy); color: #fff; text-decoration: none; font-weight: 500; padding: 9px 16px; border-radius: 4px; }
+  a.dl:hover { background: var(--blue); }
+  @media (max-width: 860px) { .specs.three { grid-template-columns: 1fr; } .specs.three div { border-right: 0 !important; border-bottom: 1px solid var(--line); } .specs.three div:last-child { border-bottom: 0; } }
 </style>
 </head>
 <body>
@@ -152,12 +157,10 @@
   <div class="wrap">
     <a class="brand" href="#top">RainSaver</a>
     <nav>
-      <a href="#purpose">Purpose</a>
-      <a href="#design">Design</a>
-      <a href="#logger">Data logger</a>
+      <a href="#why">Why it matters</a>
+      <a href="#how">How it works</a>
       <a href="#simulation">Simulation</a>
       <a href="#analyzer">Log analyzer</a>
-      <a href="#materials">Materials</a>
       <a href="#method">Method</a>
       <a href="#results">Results</a>
       <a href="#references">References</a>
@@ -171,46 +174,40 @@
       <div class="kicker">Science Fair Project</div>
       <h1>RainSaver</h1>
       <p class="subhead">A Sensor-Controlled Plant Watering System Powered by Rainwater</p>
-      <p class="subtitle">An Arduino measures soil moisture and opens a 12&nbsp;V valve only when the plant needs water. The water comes from a raised rain bucket, so no tap water and no pump are used.</p>
-      <div class="specs">
-        <div><b>35 % → 60 %</b><span>Watering starts / stops</span></div>
-        <div><b>30 s max</b><span>Valve open per pulse</span></div>
-        <div><b>15 min</b><span>On-board logging interval</span></div>
-        <div><b>~10 days</b><span>Data stored in EEPROM</span></div>
+      <p class="subtitle">A plant watering system that uses rainwater instead of tap water, and only waters when the soil is actually dry.</p>
+      <div class="specs three">
+        <div><b>0 L</b><span>Tap water used</span></div>
+        <div><b>35 % → 60 %</b><span>Soil moisture target range</span></div>
+        <div><b>10 days</b><span>Data stored on the Arduino</span></div>
       </div>
     </div>
   </div>
 
-  <section id="purpose">
+  <section id="why">
     <div class="wrap">
       <div class="sec-num">01</div>
-      <h2>Purpose</h2>
-      <p class="lead">In Metro Vancouver, daily water use rises by about 50 % in the hot, dry summer months, mostly because of lawn and garden watering (Metro Vancouver, n.d.). Most of that is treated drinking water, applied on a schedule whether the soil needs it or not.</p>
-      <p>Soil moisture sensors offer a way to water only when needed. However, field tests of commercial sensor-based irrigation controllers found that many of them were not precise instruments (Cardenas-Lailhacar &amp; Dukes, 2010), and low-cost capacitive sensors give reliable readings only when they are calibrated for the specific soil they are used in (Placidi et al., 2020). This project builds a low-cost controller, calibrates its sensor for the soil being used, and supplies the water from collected rain instead of the tap.</p>
-      <div class="grid2" style="margin-top:20px">
+      <h2>Why it matters</h2>
+      <p class="lead">In Metro Vancouver, daily water use rises by about 50 % in the hot, dry summer months, from about 1 billion to more than 1.5 billion litres a day, mostly because of lawn and garden watering (Metro Vancouver, n.d.). Almost all of it is treated drinking water.</p>
+      <p>British Columbians also use more water at home than the Canadian average of 223 litres per person per day (Statistics Canada, 2023). During the 2023 drought, Metro Vancouver moved to Stage 2 restrictions and banned all lawn watering (City of Vancouver, 2023).</p>
+      <p>Two simple changes can help. Rainwater collected in a barrel reduces demand on treated drinking water, and it is chlorine-free and at outdoor temperature, which is better for plants (City of Vancouver, n.d.). Soil moisture sensors can prevent watering when the soil is already wet, although research has shown that their accuracy varies and that they save the most water where people over-water (Cardenas-Lailhacar &amp; Dukes, 2010; Dukes, 2012). Low-cost sensors need to be calibrated for the soil they are used in (Placidi et al., 2020). RainSaver combines both ideas.</p>
+      <div class="grid2" style="margin-top:24px">
         <div class="box">
           <div class="lbl">Question</div>
-          <p>Can a sensor-controlled, gravity-fed system keep a potted plant's soil moisture between 35&nbsp;% and 60&nbsp;% using only collected rainwater?</p>
+          <p>Can a sensor-controlled system keep a plant's soil moisture between 35&nbsp;% and 60&nbsp;% using only collected rainwater?</p>
         </div>
         <div class="box">
           <div class="lbl">Hypothesis</div>
-          <p>If the valve opens only when the soil drops below 35&nbsp;% and closes once it reaches 60&nbsp;%, then the soil will stay in that range while using less water than watering on a fixed schedule.</p>
+          <p>If the plant is watered only when the soil drops below 35&nbsp;%, then the soil will stay in the target range while using less water than watering on a fixed schedule.</p>
         </div>
-      </div>
-      <h3 style="margin-top:28px">Variables</h3>
-      <div class="grid3">
-        <div class="box"><div class="lbl">Independent</div><p>Watering method: automatic (sensor-controlled) or fixed schedule.</p></div>
-        <div class="box"><div class="lbl">Dependent</div><p>Soil moisture (%) over time, and total water used (L).</p></div>
-        <div class="box"><div class="lbl">Controlled</div><p>Plant species, pot size, soil type, location, bucket height, and tube length.</p></div>
       </div>
     </div>
   </section>
 
-  <section id="design" class="alt">
+  <section id="how" class="alt">
     <div class="wrap">
       <div class="sec-num">02</div>
-      <h2>System design</h2>
-      <p class="lead">The system has two separate paths: a water path driven by gravity, and an electrical control path that decides when the valve is open.</p>
+      <h2>How it works</h2>
+      <p class="lead">Water flows from a raised rain bucket to the plant by gravity, so no pump is needed. An Arduino reads the soil moisture and opens an electric valve only when the soil is too dry.</p>
 
       <figure>
         <div class="fig-frame">
@@ -257,95 +254,31 @@
         <figcaption><b>Figure 1.</b> System block diagram. Solid blue lines are the water path (gravity). Dashed black lines are the electrical control path.</figcaption>
       </figure>
 
-      <figure>
-        <div class="fig-frame">
-          <svg viewBox="0 0 900 250" role="img" aria-label="State diagram of the control logic">
-            <defs>
-              <marker id="as" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" fill="#3d4b5a"/></marker>
-            </defs>
-            <g font-family="IBM Plex Sans, Arial" text-anchor="middle">
-              <rect x="20" y="60" width="140" height="56" rx="28" fill="#fff" stroke="#3d4b5a" stroke-width="1.5"/>
-              <text x="90" y="93" font-family="IBM Plex Mono, monospace" font-size="15" fill="#0b2a4a">IDLE</text>
-              <rect x="250" y="60" width="160" height="56" rx="28" fill="#eef5fb" stroke="#0063b1" stroke-width="1.5"/>
-              <text x="330" y="93" font-family="IBM Plex Mono, monospace" font-size="15" fill="#0b2a4a">WATERING</text>
-              <rect x="500" y="60" width="150" height="56" rx="28" fill="#fff" stroke="#3d4b5a" stroke-width="1.5"/>
-              <text x="575" y="93" font-family="IBM Plex Mono, monospace" font-size="15" fill="#0b2a4a">SOAKING</text>
-              <rect x="740" y="60" width="140" height="56" rx="28" fill="#eef7ee" stroke="#2e7d32" stroke-width="1.5"/>
-              <text x="810" y="93" font-family="IBM Plex Mono, monospace" font-size="15" fill="#0b2a4a">RESTING</text>
-              <rect x="490" y="180" width="170" height="56" rx="28" fill="#fff6ea" stroke="#a35a00" stroke-width="1.5"/>
-              <text x="575" y="213" font-family="IBM Plex Mono, monospace" font-size="15" fill="#0b2a4a">LOCKOUT</text>
-              <g font-size="13" fill="#3d4b5a">
-                <line x1="160" y1="88" x2="246" y2="88" stroke="#3d4b5a" stroke-width="1.5" marker-end="url(#as)"/>
-                <text x="205" y="78">&lt; 35 %</text>
-                <line x1="410" y1="88" x2="496" y2="88" stroke="#3d4b5a" stroke-width="1.5" marker-end="url(#as)"/>
-                <text x="453" y="78">30 s</text>
-                <path d="M575 60 C575 20 330 20 330 56" fill="none" stroke="#3d4b5a" stroke-width="1.5" marker-end="url(#as)"/>
-                <text x="453" y="22">60 s, still &lt; 60 %</text>
-                <line x1="650" y1="88" x2="736" y2="88" stroke="#3d4b5a" stroke-width="1.5" marker-end="url(#as)"/>
-                <text x="693" y="78">≥ 60 %</text>
-                <path d="M810 116 C810 160 90 160 90 120" fill="none" stroke="#3d4b5a" stroke-width="1.5" marker-end="url(#as)"/>
-                <text x="300" y="168">after 10 min rest</text>
-                <line x1="575" y1="116" x2="575" y2="176" stroke="#a35a00" stroke-width="1.5" marker-end="url(#as)"/>
-                <text x="586" y="146" text-anchor="start">4 pulses with no rise</text>
-                <text x="586" y="162" text-anchor="start">(bucket empty)</text>
-              </g>
-            </g>
-          </svg>
+      <div class="grid2" style="margin-top:24px">
+        <div class="box">
+          <div class="lbl">Watering</div>
+          <p>The sensor is read every 5 seconds. Below 35 %, the valve opens for up to 30 seconds, then waits 60 seconds for the water to soak in. It stops at 60 %.</p>
         </div>
-        <figcaption><b>Figure 2.</b> Control logic. The valve is only open in the WATERING state. LOCKOUT requires a manual reset.</figcaption>
-      </figure>
+        <div class="box">
+          <div class="lbl">Data logging</div>
+          <p>Every 15 minutes, the Arduino saves the average soil moisture in its own memory. It stores about 10 days of data, and keeps it when unplugged.</p>
+        </div>
+        <div class="box">
+          <div class="lbl">Safety</div>
+          <p>If watering doesn't raise the moisture, the bucket is probably empty, so the system stops. The valve also closes automatically if the power goes out.</p>
+        </div>
+        <div class="box">
+          <div class="lbl">Materials</div>
+          <p>Arduino Uno, soil moisture sensor, 5 V relay, 12 V solenoid valve, 12 V power supply, rain bucket, tubing.</p>
+        </div>
+      </div>
+      <p style="margin-top:20px"><a class="dl" href="auto_waterer.ino" download>Download the Arduino code</a></p>
     </div>
   </section>
 
-  <section id="logger">
+  <section id="simulation">
     <div class="wrap">
       <div class="sec-num">03</div>
-      <h2>On-board data logger</h2>
-      <p class="lead">The Arduino records its own data, so the experiment does not depend on a computer staying connected. Records are stored in the EEPROM of the ATmega328P microcontroller, which keeps its contents when power is removed.</p>
-      <div class="grid2">
-        <div class="box">
-          <div class="lbl">How a record is made</div>
-          <p>The sensor is read every 5&nbsp;s. Every 15&nbsp;min, the average of those readings (about 180 samples) is stored as one record, together with a flag showing whether the valve opened during that period. Averaging reduces noise from single readings.</p>
-        </div>
-        <div class="box">
-          <div class="lbl">Storage capacity</div>
-          <p>The ATmega328P has 1,024 bytes of EEPROM (Microchip Technology, 2018). 16 bytes hold the header, leaving 1,008 one-byte records: 1,008 × 15&nbsp;min ≈ 252&nbsp;h, or about 10.5 days. When full, the oldest records are overwritten.</p>
-        </div>
-      </div>
-      <h3 style="margin-top:28px">Record format</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Byte value</th><th>Meaning</th><th>Example</th></tr></thead>
-          <tbody>
-            <tr><td class="k mono">0 – 100</td><td>Average soil moisture (%), valve did not open</td><td class="num">0x2A → 42 %, not watered</td></tr>
-            <tr><td class="k mono">128 – 228</td><td>Average soil moisture + 128 (bit 7 set), valve opened</td><td class="num">0xB9 → 57 %, watered</td></tr>
-            <tr><td class="k mono">254 (0xFE)</td><td>RESTART marker: power was turned on</td><td class="num">new time segment begins</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <div class="callout">
-        <b>Memory endurance.</b> EEPROM cells are rated for at least 100,000 write/erase cycles (Microchip Technology, 2018). The most-written bytes (the header) are updated once per record, 96 times a day, so they would last about 100,000 ÷ 96 ≈ 1,040 days. The code also uses <code>EEPROM.update()</code>, which skips the write if the value has not changed (Arduino, n.d.-b).
-      </div>
-      <h3 style="margin-top:28px">Serial commands (9600 baud)</h3>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Command</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td class="k mono">d</td><td>Print the saved log as comma-separated values (paste into the Log analyzer below or a spreadsheet)</td></tr>
-            <tr><td class="k mono">i</td><td>Show records saved, hours covered, total watering pulses and total valve-open time</td></tr>
-            <tr><td class="k mono">e e</td><td>Erase the log and start a new one (must be typed twice within 15 s)</td></tr>
-            <tr><td class="k mono">t</td><td>Valve test: open for 10 s</td></tr>
-            <tr><td class="k mono">c / n</td><td>Calibration mode (raw readings every second) / back to normal</td></tr>
-            <tr><td class="k mono">w / s / r</td><td>Water now / stop / reset after a lockout</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section id="simulation" class="alt">
-    <div class="wrap">
-      <div class="sec-num">04</div>
       <h2>Interactive simulation</h2>
       <p class="lead">This model runs the same control rules as the Arduino code. Change the conditions and observe how the system responds. The soil absorbs water gradually, so the sensor reading rises after a delay, as it does in a real pot.</p>
 
@@ -446,15 +379,15 @@
           <svg id="chart" viewBox="0 0 900 300" role="img" aria-label="Line chart of soil moisture over time"></svg>
           <div class="tip" id="tip"></div>
         </div>
-        <figcaption><b>Figure 3.</b> Simulated soil moisture (%) over the last 30 simulated minutes, sampled every 5 s. Shaded bands show when the valve was open. Dashed lines mark the 35 % start and 60 % stop thresholds.</figcaption>
+        <figcaption><b>Figure 2.</b> Simulated soil moisture (%) over the last 30 simulated minutes, sampled every 5 s. Shaded bands show when the valve was open. Dashed lines mark the 35 % start and 60 % stop thresholds.</figcaption>
       </figure>
       <div class="serial" id="serial" aria-live="polite"></div>
     </div>
   </section>
 
-  <section id="analyzer">
+  <section id="analyzer" class="alt">
     <div class="wrap">
-      <div class="sec-num">05</div>
+      <div class="sec-num">04</div>
       <h2>Log analyzer</h2>
       <p class="lead">Type <code>d</code> in the Arduino Serial Monitor, copy the output, and paste it below. The analyzer converts the records to real dates and times, graphs them, and calculates summary statistics. Nothing is uploaded; everything runs in your browser.</p>
 
@@ -487,639 +420,39 @@
             <svg id="aChart" viewBox="0 0 900 300" role="img" aria-label="Logged soil moisture over time"></svg>
             <div class="tip" id="aTip"></div>
           </div>
-          <figcaption><b>Figure 4.</b> Logged soil moisture (15-min averages) from the Arduino's on-board data log. Shaded bands are periods in which the valve opened. Gaps are power-off periods.</figcaption>
+          <figcaption><b>Figure 3.</b> Logged soil moisture (15-min averages) from the Arduino's on-board data log. Shaded bands are periods in which the valve opened. Gaps are power-off periods.</figcaption>
         </figure>
         <div class="controls"><button id="aCsv" type="button">Download CSV with dates</button></div>
       </div>
     </div>
   </section>
 
-  <section id="materials" class="alt">
-    <div class="wrap">
-      <div class="sec-num">06</div>
-      <h2>Materials</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Component</th><th>Model / specification</th><th>Function</th></tr></thead>
-          <tbody>
-            <tr><td class="k">Microcontroller</td><td>Arduino Uno R3 (ATmega328P, 16 MHz, 32 KB flash, 2 KB SRAM, 1 KB EEPROM) (Arduino, n.d.-a)</td><td>Reads the sensor, runs the control logic and safety limits, stores the data log.</td></tr>
-            <tr><td class="k">Moisture sensor</td><td>Analog soil moisture sensor, output to A0</td><td>Measures soil water content. Powered from pin 8 only during readings to reduce corrosion.</td></tr>
-            <tr><td class="k">Relay module</td><td>5 V single-channel relay module, input on pin 7</td><td>Lets the 5 V Arduino switch the 12 V valve circuit, keeping the two circuits separate.</td></tr>
-            <tr><td class="k">Solenoid valve</td><td>U.S. Solid USS2-00069, ½″, 12 V DC, normally closed, 20 W (≈ 1.7 A) (U.S. Solid, n.d.)</td><td>Opens only while powered. Closes automatically if power is lost.</td></tr>
-            <tr><td class="k">Power supply</td><td>12 V DC, 2 A adapter with barrel-jack screw terminal</td><td>Powers the valve coil (1.7 A is 85 % of the rated 2 A).</td></tr>
-            <tr><td class="k">Flyback diode</td><td>1N4007, 1 A, 1000 V (Vishay General Semiconductor, 2020)</td><td>Absorbs the voltage spike from the valve coil when it switches off.</td></tr>
-            <tr><td class="k">Reservoir</td><td>Bucket with ½″ barbed bulkhead fitting and mesh cover</td><td>Collects rainwater. Mesh keeps out debris and mosquitoes.</td></tr>
-            <tr><td class="k">Plumbing</td><td>½″ NPT brass hose barbs (2), ½″ ID vinyl tubing, worm-gear hose clamps (4), PTFE tape</td><td>Leak-free connections from bucket to valve to pot.</td></tr>
-            <tr><td class="k">Enclosure</td><td>Lidded plastic container</td><td>Keeps the electronics dry.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
   <section id="method">
     <div class="wrap">
-      <div class="sec-num">07</div>
+      <div class="sec-num">05</div>
       <h2>Method</h2>
       <ol class="method">
-        <li><b>Calibrate the sensor.</b> Use command <code>c</code> to record the raw reading in dry soil and in water. Enter these as <code>DRY_VALUE</code> and <code>WET_VALUE</code> so readings convert to 0–100 %. Calibration is done in the same soil used for the experiment (Placidi et al., 2020).</li>
-        <li><b>Test the valve and power supply.</b> With the bucket filled and raised, run the 10-second valve test (<code>t</code>) and measure the supply voltage while the valve is open. The target is ≥ 11 V.</li>
-        <li><b>Measure the flow rate.</b> Time how long the valve takes to fill a measuring cup and calculate mL per second.</li>
-        <li><b>Check for leaks.</b> Run water through every connection and tighten the clamps where needed.</li>
-        <li><b>Start the log.</b> Type <code>e</code> twice to erase old data, and record the date and time in the logbook. Record the time of every later restart as well.</li>
-        <li><b>Run the experiment.</b> Run the automatic pot and a fixed-schedule pot side by side for at least 7 days. Record the volume of water given to the fixed-schedule pot.</li>
-        <li><b>Retrieve and analyze the data.</b> Type <code>d</code> and <code>i</code>, paste the output into the Log analyzer, and compare time in the target range and total water used.</li>
+        <li><b>Calibrate</b> the sensor in dry soil and in water, using the same soil as the experiment.</li>
+        <li><b>Test</b> the valve with the bucket full, and measure how many mL per second it lets through.</li>
+        <li><b>Start the log</b> and write the date and time in the logbook.</li>
+        <li><b>Run</b> one automatic pot and one pot watered on a fixed schedule for at least 7 days.</li>
+        <li><b>Analyze</b> the saved data with the log analyzer and compare the water used by each pot.</li>
       </ol>
-    </div>
-  </section>
-
-  <section id="safety" class="alt">
-    <div class="wrap">
-      <div class="sec-num">08</div>
-      <h2>Safety and failure handling</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Risk</th><th>Control in the design</th></tr></thead>
-          <tbody>
-            <tr><td class="k">Valve coil overheating</td><td>Each pulse is limited to 30 s, followed by a 60 s cool-down. Maximum 6 pulses per session, then a 10-minute rest.</td></tr>
-            <tr><td class="k">Empty bucket</td><td>If 4 pulses in a row raise moisture by less than 2 %, the system locks out and stops watering until reset.</td></tr>
-            <tr><td class="k">Loose sensor wire</td><td>Readings outside the valid range (below 50 or above 1000 raw) trigger a lockout instead of watering.</td></tr>
-            <tr><td class="k">Over-watering</td><td>Watering stops as soon as moisture reaches 60 %. The valve fails closed if power is lost.</td></tr>
-            <tr><td class="k">Water near electricity</td><td>Only 5 V and 12 V DC near the water. Electronics are in a sealed box above the pot, and the wall adapter is kept dry and away from the setup.</td></tr>
-            <tr><td class="k">Data loss</td><td>Records are stored in non-volatile EEPROM, so they survive power loss. Erasing requires typing <code>e</code> twice within 15 s.</td></tr>
-            <tr><td class="k">Valve opening at startup</td><td>The relay pin is set to OFF before it is enabled, so the valve cannot open during power-up.</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  </section>
-
-  <section id="code">
-    <div class="wrap">
-      <div class="sec-num">09</div>
-      <h2>Arduino code</h2>
-      <p class="lead">Upload with the Arduino IDE (board: Arduino Uno). Open the Serial Monitor at 9600 baud. Type <code>?</code> for settings and <code>d</code> to print the saved data log.</p>
-      <div class="code-head"><span>auto_waterer.ino</span><button id="copyBtn" type="button">Copy</button></div>
-      <pre><code id="sketch">/*
-  RAINSAVER - Arduino Uno
-  ========================
-  A Sensor-Controlled Plant Watering System Powered by Rainwater
-
-  Rain bucket (raised) -&gt; bulkhead -&gt; vinyl tube -&gt; brass barb
-  -&gt; 12V solenoid valve -&gt; brass barb -&gt; vinyl tube -&gt; plant pot
-
-  PARTS
-    Valve:    U.S. Solid USS2-00069, 1/2", 12V DC, normally closed
-              about 20 W = about 1.7 A. Gets hot, so it must NOT stay on.
-    Power:    12V 2A adapter -&gt; barrel jack screw terminal
-    Relay:    5V relay module
-    Diode:    1N4007 across the valve (flyback protection)
-    Sensor:   soil moisture sensor (analog)
-
-  WIRING
-    Sensor   VCC -&gt; pin 8 (only powered while reading, slows corrosion)
-             GND -&gt; GND      AOUT -&gt; A0
-    Relay    IN  -&gt; pin 7    VCC -&gt; 5V    GND -&gt; GND
-    Valve    12V + -&gt; relay COM
-             relay NO -&gt; valve wire A  (call this one +)
-             valve wire B -&gt; 12V -
-             1N4007 across valve wires, STRIPE toward valve wire A (+)
-
-  SAFETY FEATURES
-    - Valve open 30 s max per pulse, then 60 s soak/cool-down
-    - Max 6 pulses per session (3 min total), then 10 min rest
-    - Lockout if 4 pulses don't make the soil wetter (empty bucket)
-    - Lockout if the sensor reading is impossible (loose wire)
-    - Valve forced closed at startup
-
-  BUILT-IN DATA LOGGER
-    Every 15 minutes the Arduino saves the AVERAGE soil moisture and
-    whether it watered, in its own memory (EEPROM). The data stays
-    saved even when the power or USB is unplugged.
-    - Holds about 10 days (1000 records). When full, the oldest
-      records are replaced by new ones.
-    - Also saves running totals: watering pulses and valve-open time.
-    - The Arduino has no clock, so WRITE DOWN THE DATE AND TIME
-      when you start a new log (command e e). Each power-on adds a
-      RESTART line, so also note when you unplug/plug it back in.
-
-  SERIAL MONITOR (9600 baud) - type a letter and press Enter
-    d = DUMP the saved log as a table (copy it into a spreadsheet)
-    i = log info (how many records, days covered, totals)
-    e = erase the log and start a new one (type e twice to confirm)
-    t = valve TEST: opens 10 s (sink test / measure adapter voltage)
-    w = water now (one pulse)
-    s = stop watering now
-    c = calibration mode (raw numbers every second)
-    n = back to normal mode
-    r = reset after a lockout
-    ? = show settings
-*/
-
-#include &lt;EEPROM.h&gt;
-
-// ================= SETTINGS YOU CAN CHANGE =================
-
-const byte SOIL_PIN         = A0;
-const byte SENSOR_POWER_PIN = 8;
-const byte RELAY_PIN        = 7;
-const byte LED_PIN          = LED_BUILTIN;   // pin 13 light on the board
-
-// Most relay modules switch ON with LOW. If the valve is open when it
-// should be closed, change this to false.
-const bool RELAY_ACTIVE_LOW = true;
-
-// Calibration: type c, then write down the raw numbers.
-const int DRY_VALUE = 520;   // sensor in dry garden soil
-const int WET_VALUE = 260;   // sensor in a cup of water
-
-// Moisture targets (percent)
-const int START_WATERING_BELOW = 35;
-const int STOP_WATERING_AT     = 60;
-
-// Timing
-const unsigned long MAX_PULSE_MS  = 30UL * 1000;       // 30 s valve open max
-const unsigned long SOAK_MS       = 60UL * 1000;       // 60 s soak + cool coil
-const unsigned long REST_MS       = 10UL * 60 * 1000;  // 10 min between sessions
-const unsigned long TEST_MS       = 10UL * 1000;       // t command
-const unsigned long READ_EVERY_MS = 5UL * 1000;        // read + print every 5 s
-
-// Data logger: minutes between saved records.
-// 15 min -&gt; about 10 days of storage. 30 min -&gt; about 21 days.
-const byte LOG_EVERY_MIN = 15;
-
-// Safety limits
-const byte MAX_PULSES_PER_SESSION = 6;
-const byte MAX_PULSES_NO_CHANGE   = 4;
-const int  MIN_RISE_PERCENT       = 2;
-const int  SENSOR_MIN_VALID       = 50;
-const int  SENSOR_MAX_VALID       = 1000;
-
-// ===========================================================
-
-// ---------------- EEPROM layout ----------------
-// bytes 0-15  : header (see below)
-// bytes 16-end: one byte per record
-//   0-100  = average moisture %, bit 7 (+128) set if it watered
-//   0xFE   = RESTART marker (power was turned on)
-const int  ADDR_MAGIC    = 0;    // 2 bytes: 'R','S'
-const int  ADDR_HEAD     = 2;    // uint16: where the next record goes
-const int  ADDR_COUNT    = 4;    // uint16: number of records stored
-const int  ADDR_OPEN_S   = 6;    // uint32: total valve-open seconds
-const int  ADDR_PULSES   = 10;   // uint16: total watering pulses
-const int  ADDR_INTERVAL = 12;   // byte  : LOG_EVERY_MIN used for this log
-const int  DATA_START    = 16;
-const byte MARK_RESTART  = 0xFE;
-const byte WATERED_BIT   = 0x80;
-
-uint16_t logCapacity;     // set in setup from EEPROM size
-uint16_t logHead = 0;
-uint16_t logCount = 0;
-uint32_t savedOpenS = 0;   // valve-open seconds before this power-on
-uint16_t savedPulses = 0;  // pulses before this power-on
-
-// averaging for the current 15-minute record
-long          logSum = 0;
-unsigned int  logSamples = 0;
-bool          logWatered = false;
-unsigned long lastLogWrite = 0;
-uint16_t      pulsesSinceBoot = 0;
-
-// ---------------- controller ----------------
-enum State { IDLE, WATERING, SOAKING, RESTING, TESTING, LOCKOUT, CALIBRATE };
-State state = IDLE;
-
-unsigned long stateStart  = 0;
-unsigned long lastRead    = 0;
-unsigned long lastLed     = 0;
-unsigned long totalOpenMs = 0;    // since power-on
-unsigned long eraseAsked  = 0;
-
-int  rawValue = 0;
-int  moisture = 0;
-int  moistureAtPulse = 0;
-byte pulsesThisSession = 0;
-byte pulsesNoChange = 0;
-bool valveOpen = false;
-bool ledOn = false;
-
-const char* stateName(State s) {
-  switch (s) {
-    case IDLE:      return "IDLE";
-    case WATERING:  return "WATERING";
-    case SOAKING:   return "SOAKING";
-    case RESTING:   return "RESTING";
-    case TESTING:   return "TESTING";
-    case LOCKOUT:   return "LOCKOUT";
-    case CALIBRATE: return "CALIBRATE";
-  }
-  return "?";
-}
-
-// ================= DATA LOGGER =================
-void logSaveHeader() {
-  EEPROM.put(ADDR_HEAD, logHead);
-  EEPROM.put(ADDR_COUNT, logCount);
-  EEPROM.put(ADDR_OPEN_S, (uint32_t)(savedOpenS + totalOpenMs / 1000));
-  EEPROM.put(ADDR_PULSES, (uint16_t)(savedPulses + pulsesSinceBoot));
-}
-
-void logWriteByte(byte b) {
-  EEPROM.update(DATA_START + logHead, b);
-  logHead = (logHead + 1) % logCapacity;
-  if (logCount &lt; logCapacity) logCount++;
-  logSaveHeader();
-}
-
-void logErase() {
-  EEPROM.update(ADDR_MAGIC, 'R');
-  EEPROM.update(ADDR_MAGIC + 1, 'S');
-  EEPROM.update(ADDR_INTERVAL, LOG_EVERY_MIN);
-  logHead = 0; logCount = 0;
-  savedOpenS = 0; savedPulses = 0;
-  totalOpenMs = 0;
-  pulsesSinceBoot = 0;
-  logSum = 0; logSamples = 0; logWatered = false;
-  lastLogWrite = millis();
-  logSaveHeader();
-}
-
-void logBegin() {
-  logCapacity = EEPROM.length() - DATA_START;
-  if (EEPROM.read(ADDR_MAGIC) != 'R' || EEPROM.read(ADDR_MAGIC + 1) != 'S') {
-    logErase();                       // first time ever: set up a new log
-    Serial.println(F("# New data log created."));
-  } else {
-    EEPROM.get(ADDR_HEAD, logHead);
-    EEPROM.get(ADDR_COUNT, logCount);
-    EEPROM.get(ADDR_OPEN_S, savedOpenS);
-    EEPROM.get(ADDR_PULSES, savedPulses);
-    if (logHead &gt;= logCapacity || logCount &gt; logCapacity) logErase();
-  }
-  logWriteByte(MARK_RESTART);          // mark this power-on
-  lastLogWrite = millis();
-}
-
-// called every 5 s with the new reading
-void logAddSample(int pct) {
-  logSum += pct;
-  logSamples++;
-  if (millis() - lastLogWrite &lt; (unsigned long)LOG_EVERY_MIN * 60000UL) return;
-  lastLogWrite = millis();
-  byte avg = logSamples ? (byte)(logSum / logSamples) : (byte)pct;
-  if (avg &gt; 100) avg = 100;
-  logWriteByte(avg | (logWatered ? WATERED_BIT : 0));
-  logSum = 0; logSamples = 0; logWatered = false;
-}
-
-void logInfo() {
-  byte interval = EEPROM.read(ADDR_INTERVAL);
-  uint16_t records = 0;
-  for (uint16_t k = 0; k &lt; logCount; k++) {
-    uint16_t idx = (logHead + logCapacity - logCount + k) % logCapacity;
-    if (EEPROM.read(DATA_START + idx) != MARK_RESTART) records++;
-  }
-  Serial.println(F("# ---- Data log ----"));
-  Serial.print(F("# Records saved: ")); Serial.print(records);
-  Serial.print(F(" of about ")); Serial.println(logCapacity);
-  Serial.print(F("# One record every ")); Serial.print(interval); Serial.println(F(" min"));
-  Serial.print(F("# Time covered: ")); Serial.print((records * (unsigned long)interval) / 60.0, 1);
-  Serial.println(F(" hours"));
-  Serial.print(F("# Total watering pulses: ")); Serial.println(savedPulses + pulsesSinceBoot);
-  Serial.print(F("# Total valve-open time: ")); Serial.print(savedOpenS + totalOpenMs / 1000);
-  Serial.println(F(" s"));
-  Serial.print(F("# Next record in: "));
-  Serial.print(((unsigned long)LOG_EVERY_MIN * 60000UL - (millis() - lastLogWrite)) / 1000);
-  Serial.println(F(" s"));
-}
-
-void logDump() {
-  byte interval = EEPROM.read(ADDR_INTERVAL);
-  Serial.println(F("# ===== RAINSAVER DATA LOG ====="));
-  Serial.println(F("# Copy everything from 'record' down to END into a spreadsheet."));
-  Serial.println(F("# minutes = time since that power-on. RESTART = power was turned on."));
-  Serial.println(F("record,power_on,minutes,hours,moisture_pct,watered"));
-  uint16_t rec = 0, powerOn = 0;
-  unsigned long minutes = 0;
-  for (uint16_t k = 0; k &lt; logCount; k++) {
-    uint16_t idx = (logHead + logCapacity - logCount + k) % logCapacity;
-    byte b = EEPROM.read(DATA_START + idx);
-    if (b == MARK_RESTART) {
-      powerOn++;
-      minutes = 0;
-      Serial.print(F("RESTART,")); Serial.print(powerOn); Serial.println(F(",0,0,,"));
-      continue;
-    }
-    minutes += interval;
-    rec++;
-    Serial.print(rec);                   Serial.print(',');
-    Serial.print(powerOn);               Serial.print(',');
-    Serial.print(minutes);               Serial.print(',');
-    Serial.print(minutes / 60.0, 2);     Serial.print(',');
-    Serial.print(b &amp; 0x7F);              Serial.print(',');
-    Serial.println((b &amp; WATERED_BIT) ? 1 : 0);
-  }
-  Serial.println(F("END"));
-  logInfo();
-}
-
-// ================= VALVE =================
-void setValve(bool open) {
-  if (open == valveOpen) return;
-  if (!open) totalOpenMs += millis() - stateStart;
-  valveOpen = open;
-  if (open) logWatered = true;
-  bool level = RELAY_ACTIVE_LOW ? !open : open;
-  digitalWrite(RELAY_PIN, level ? HIGH : LOW);
-}
-
-// ================= SENSOR =================
-int readSoilRaw() {
-  digitalWrite(SENSOR_POWER_PIN, HIGH);
-  delay(10);
-  const byte N = 10;
-  int s[N];
-  for (byte i = 0; i &lt; N; i++) { s[i] = analogRead(SOIL_PIN); delay(2); }
-  digitalWrite(SENSOR_POWER_PIN, LOW);
-
-  // sort, then average the middle 6 (drops 2 highest + 2 lowest)
-  for (byte i = 1; i &lt; N; i++) {
-    int key = s[i]; int j = i - 1;
-    while (j &gt;= 0 &amp;&amp; s[j] &gt; key) { s[j + 1] = s[j]; j--; }
-    s[j + 1] = key;
-  }
-  long sum = 0;
-  for (byte i = 2; i &lt; N - 2; i++) sum += s[i];
-  return sum / (N - 4);
-}
-
-int rawToPercent(int raw) {
-  long pct = map(raw, DRY_VALUE, WET_VALUE, 0, 100);
-  return constrain(pct, 0, 100);
-}
-
-// ================= STATES =================
-void enterState(State s) {
-  setValve(false);                 // close first, always
-  state = s;
-  stateStart = millis();
-  if (s == WATERING) {
-    moistureAtPulse = moisture;
-    pulsesThisSession++;
-    pulsesSinceBoot++;
-    setValve(true);
-  }
-  if (s == TESTING) setValve(true);
-  Serial.print(F("# -&gt; "));
-  Serial.println(stateName(s));
-}
-
-void lockout(const __FlashStringHelper* why) {
-  enterState(LOCKOUT);
-  Serial.print(F("# SAFETY LOCKOUT: "));
-  Serial.println(why);
-  Serial.println(F("# Fix it, then type r"));
-}
-
-void startSession() {
-  pulsesThisSession = 0;
-  pulsesNoChange = 0;
-  enterState(WATERING);
-}
-
-void endSession() { enterState(RESTING); }
-
-// ================= LIVE OUTPUT =================
-void printHeader() {
-  Serial.println(F("time_s,raw,moisture_pct,state,valve,total_open_s"));
-}
-
-void logLine() {
-  Serial.print(millis() / 1000);   Serial.print(',');
-  Serial.print(rawValue);          Serial.print(',');
-  Serial.print(moisture);          Serial.print(',');
-  Serial.print(stateName(state));  Serial.print(',');
-  Serial.print(valveOpen ? 1 : 0); Serial.print(',');
-  Serial.println(totalOpenMs / 1000);
-}
-
-void printSettings() {
-  Serial.println(F("# ---- Settings ----"));
-  Serial.print(F("# Dry raw / Wet raw: ")); Serial.print(DRY_VALUE);
-  Serial.print(F(" / "));                    Serial.println(WET_VALUE);
-  Serial.print(F("# Water below / stop at %: ")); Serial.print(START_WATERING_BELOW);
-  Serial.print(F(" / "));                          Serial.println(STOP_WATERING_AT);
-  Serial.print(F("# Pulse s / Soak s: ")); Serial.print(MAX_PULSE_MS / 1000);
-  Serial.print(F(" / "));                  Serial.println(SOAK_MS / 1000);
-  Serial.print(F("# Max pulses per session: ")); Serial.println(MAX_PULSES_PER_SESSION);
-  Serial.print(F("# Rest min: ")); Serial.println(REST_MS / 60000);
-  Serial.print(F("# Log every min: ")); Serial.println(LOG_EVERY_MIN);
-  Serial.println(F("# Commands: d dump log, i log info, e erase log, t test, w water,"));
-  Serial.println(F("#           s stop, c calibrate, n normal, r reset, ? settings"));
-}
-
-// ================= COMMANDS =================
-void handleSerial() {
-  while (Serial.available()) {
-    char c = Serial.read();
-    if (c &gt;= 'A' &amp;&amp; c &lt;= 'Z') c += 32;   // accept capitals
-    if (c != 'e' &amp;&amp; c != '\n' &amp;&amp; c != '\r') eraseAsked = 0;
-    switch (c) {
-      case 'd':
-        logDump();
-        break;
-      case 'i':
-        logInfo();
-        break;
-      case 'e':
-        if (eraseAsked &amp;&amp; millis() - eraseAsked &lt; 15000) {
-          logErase();
-          eraseAsked = 0;
-          Serial.println(F("# Log ERASED. New log started. Write down today's date and time!"));
-        } else {
-          eraseAsked = millis();
-          Serial.println(F("# Erase the whole data log? Type e again within 15 s to confirm."));
-        }
-        break;
-      case 't':
-        if (state == LOCKOUT) { Serial.println(F("# Locked out. Type r first.")); break; }
-        Serial.println(F("# VALVE TEST 10 s - measure adapter voltage now (want 11V+)"));
-        enterState(TESTING);
-        break;
-      case 'w':
-        if (state == LOCKOUT) { Serial.println(F("# Locked out. Type r first.")); break; }
-        Serial.println(F("# Manual watering"));
-        startSession();
-        break;
-      case 's':
-        Serial.println(F("# Stopped"));
-        endSession();
-        break;
-      case 'c':
-        Serial.println(F("# CALIBRATE: dry soil, then cup of water. Write down raw numbers."));
-        enterState(CALIBRATE);
-        break;
-      case 'n':
-        printHeader();
-        enterState(IDLE);
-        break;
-      case 'r':
-        Serial.println(F("# Reset"));
-        enterState(IDLE);
-        break;
-      case '?':
-        printSettings();
-        break;
-    }
-  }
-}
-
-// ================= LED =================
-// off = waiting, solid = valve open, slow blink = soak/rest,
-// fast blink = LOCKOUT (needs you), very slow = calibrate
-void updateLed() {
-  unsigned long period;
-  switch (state) {
-    case IDLE:      digitalWrite(LED_PIN, LOW);  return;
-    case WATERING:
-    case TESTING:   digitalWrite(LED_PIN, HIGH); return;
-    case LOCKOUT:   period = 150;  break;
-    case CALIBRATE: period = 1500; break;
-    default:        period = 700;  break;
-  }
-  if (millis() - lastLed &gt;= period) {
-    lastLed = millis();
-    ledOn = !ledOn;
-    digitalWrite(LED_PIN, ledOn ? HIGH : LOW);
-  }
-}
-
-// =========================================================
-void setup() {
-  // Relay OFF before the pin becomes an output -&gt; no click at startup
-  digitalWrite(RELAY_PIN, RELAY_ACTIVE_LOW ? HIGH : LOW);
-  pinMode(RELAY_PIN, OUTPUT);
-  pinMode(SENSOR_POWER_PIN, OUTPUT);
-  digitalWrite(SENSOR_POWER_PIN, LOW);
-  pinMode(LED_PIN, OUTPUT);
-
-  Serial.begin(9600);
-  Serial.println(F("# RainSaver ready. Type ? for settings, d to see the saved log."));
-  logBegin();
-  printSettings();
-  logInfo();
-  printHeader();
-
-  rawValue = readSoilRaw();
-  moisture = rawToPercent(rawValue);
-  enterState(IDLE);
-}
-
-void loop() {
-  unsigned long now = millis();
-  handleSerial();
-  updateLed();
-
-  // ---- Calibration: raw numbers every second (not logged) ----
-  if (state == CALIBRATE) {
-    if (now - lastRead &gt;= 1000) {
-      lastRead = now;
-      rawValue = readSoilRaw();
-      Serial.print(F("raw="));       Serial.print(rawValue);
-      Serial.print(F("  moisture%=")); Serial.println(rawToPercent(rawValue));
-    }
-    return;
-  }
-
-  // ---- Timers that must run right away (not every 5 s) ----
-  if (state == TESTING &amp;&amp; now - stateStart &gt;= TEST_MS) {
-    Serial.println(F("# Test done. Did it click firmly and flow well? Log it!"));
-    enterState(IDLE);
-  }
-  if (state == WATERING &amp;&amp; now - stateStart &gt;= MAX_PULSE_MS) {
-    enterState(SOAKING);           // hard 30 s limit
-  }
-
-  // ---- Read, print and log every 5 s ----
-  if (now - lastRead &lt; READ_EVERY_MS) return;
-  lastRead = now;
-  rawValue = readSoilRaw();
-  moisture = rawToPercent(rawValue);
-  logLine();
-  logAddSample(moisture);
-
-  if (state == LOCKOUT || state == TESTING) return;
-
-  if (rawValue &lt; SENSOR_MIN_VALID || rawValue &gt; SENSOR_MAX_VALID) {
-    lockout(F("sensor reading out of range - check sensor wires"));
-    return;
-  }
-
-  switch (state) {
-    case IDLE:
-      if (moisture &lt; START_WATERING_BELOW) startSession();
-      break;
-
-    case WATERING:
-      if (moisture &gt;= STOP_WATERING_AT) endSession();
-      break;
-
-    case SOAKING:
-      if (now - stateStart &lt; SOAK_MS) break;
-
-      if (moisture &gt;= STOP_WATERING_AT) {
-        Serial.println(F("# Soil is wet enough"));
-        endSession();
-        break;
-      }
-      if (moisture - moistureAtPulse &gt;= MIN_RISE_PERCENT) {
-        pulsesNoChange = 0;
-      } else {
-        pulsesNoChange++;
-        Serial.print(F("# Pulse did nothing ("));
-        Serial.print(pulsesNoChange); Serial.print('/');
-        Serial.print(MAX_PULSES_NO_CHANGE); Serial.println(')');
-      }
-      if (pulsesNoChange &gt;= MAX_PULSES_NO_CHANGE) {
-        lockout(F("moisture not rising - bucket empty or tube blocked?"));
-      } else if (pulsesThisSession &gt;= MAX_PULSES_PER_SESSION) {
-        Serial.println(F("# Max pulses reached - resting so the valve cools"));
-        endSession();
-      } else {
-        enterState(WATERING);
-      }
-      break;
-
-    case RESTING:
-      if (now - stateStart &gt;= REST_MS) enterState(IDLE);
-      break;
-
-    default:
-      break;
-  }
-}
-</code></pre>
     </div>
   </section>
 
   <section id="results" class="alt">
     <div class="wrap">
-      <div class="sec-num">10</div>
+      <div class="sec-num">06</div>
       <h2>Results</h2>
-      <p class="lead">Measured values from testing.</p>
       <div class="table-wrap">
         <table>
-          <thead><tr><th>Measurement</th><th>Value</th><th>Notes</th></tr></thead>
+          <thead><tr><th>Measurement</th><th>Automatic</th><th>Fixed schedule</th></tr></thead>
           <tbody>
-            <tr><td class="k">Sensor raw, dry soil</td><td class="num"><span class="blank"></span></td><td>Calibration</td></tr>
-            <tr><td class="k">Sensor raw, water</td><td class="num"><span class="blank"></span></td><td>Calibration</td></tr>
-            <tr><td class="k">Supply voltage, valve open</td><td class="num"><span class="blank"></span> V</td><td>Target ≥ 11 V</td></tr>
-            <tr><td class="k">Valve flow rate</td><td class="num"><span class="blank"></span> mL/s</td><td>Timed with a measuring cup</td></tr>
-            <tr><td class="k">Logging period</td><td class="num"><span class="blank"></span> days</td><td>From the Log analyzer</td></tr>
-            <tr><td class="k">Time in target range (35–60 %)</td><td class="num"><span class="blank"></span> %</td><td>From the Log analyzer</td></tr>
-            <tr><td class="k">Watering events</td><td class="num"><span class="blank"></span></td><td>From the Log analyzer</td></tr>
-            <tr><td class="k">Water used, automatic</td><td class="num"><span class="blank"></span> L</td><td>Valve-open time × flow rate</td></tr>
-            <tr><td class="k">Water used, fixed schedule</td><td class="num"><span class="blank"></span> L</td><td>Measured</td></tr>
+            <tr><td class="k">Days tested</td><td class="num"><span class="blank"></span></td><td class="num"><span class="blank"></span></td></tr>
+            <tr><td class="k">Time in target range (35–60 %)</td><td class="num"><span class="blank"></span> %</td><td class="num"><span class="blank"></span> %</td></tr>
+            <tr><td class="k">Water used</td><td class="num"><span class="blank"></span> L</td><td class="num"><span class="blank"></span> L</td></tr>
+            <tr><td class="k">Tap water used</td><td class="num">0 L</td><td class="num"><span class="blank"></span> L</td></tr>
           </tbody>
         </table>
       </div>
@@ -1130,17 +463,16 @@ void loop() {
 
   <section id="references">
     <div class="wrap">
-      <div class="sec-num">11</div>
+      <div class="sec-num">07</div>
       <h2>References</h2>
       <ol class="refs">
-        <li>Arduino. (n.d.-a). <i>UNO R3</i> [Hardware documentation]. Retrieved November 18, 2026, from https://docs.arduino.cc/hardware/uno-rev3/</li>
-        <li>Arduino. (n.d.-b). <i>EEPROM library</i>. Retrieved November 18, 2026, from https://docs.arduino.cc/learn/built-in-libraries/eeprom/</li>
         <li>Cardenas-Lailhacar, B., &amp; Dukes, M. D. (2010). Precision of soil moisture sensor irrigation controllers under field conditions. <i>Agricultural Water Management, 97</i>(5), 666–672. https://doi.org/10.1016/j.agwat.2009.12.009</li>
+        <li>City of Vancouver. (n.d.). <i>Conserve water: Use a rain barrel</i>. Retrieved November 18, 2026, from https://vancouver.ca/home-property-development/rain-barrels.aspx</li>
+        <li>City of Vancouver. (2023). <i>Vancouver watering restrictions escalate to Stage 2 on August 4</i>. https://vancouver.ca/news-calendar/vancouver-watering-restrictions-escalate-to-stage-2-on-august-4.aspx</li>
+        <li>Dukes, M. D. (2012). Water conservation potential of landscape irrigation smart controllers. <i>Transactions of the ASABE, 55</i>(2), 563–569.</li>
         <li>Metro Vancouver. (n.d.). <i>Water use changes with the seasons</i>. Retrieved November 18, 2026, from https://www.metrovancouver.org/welovewater/why-conserve-water</li>
-        <li>Microchip Technology. (2018). <i>ATmega48A/PA/88A/PA/168A/PA/328/P megaAVR data sheet</i> (DS40002061A). https://www.microchip.com/en-us/product/atmega328p</li>
         <li>Placidi, P., Gasperini, L., Grassi, A., Cecconi, M., &amp; Scorzoni, A. (2020). Characterization of low-cost capacitive soil moisture sensors for IoT networks. <i>Sensors, 20</i>(12), Article 3585. https://doi.org/10.3390/s20123585</li>
-        <li>U.S. Solid. (n.d.). <i>1/2" stainless steel electric solenoid valve, 12V DC, normally closed</i> [Product page]. Retrieved November 18, 2026, from https://ussolid.com/1-2-stainless-steel-electric-solenoid-valve-12v-dc-normally-closed.html</li>
-        <li>Vishay General Semiconductor. (2020). <i>1N4001 thru 1N4007 general purpose plastic rectifier</i> (Document No. 88503) [Data sheet]. https://www.vishay.com/en/product/88503/</li>
+        <li>Statistics Canada. (2023). <i>Potable water use by sector and average daily use</i> (Table 38-10-0271-01) [Data table]. https://doi.org/10.25318/3810027101-eng</li>
       </ol>
     </div>
   </section>
@@ -1562,15 +894,6 @@ void loop() {
   requestAnimationFrame(frame);
 })();
 
-document.getElementById("copyBtn").addEventListener("click", function () {
-  var btn = this, text = document.getElementById("sketch").innerText;
-  function done() { btn.textContent = "Copied"; setTimeout(function () { btn.textContent = "Copy"; }, 2000); }
-  function fallback() {
-    var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
-    try { document.execCommand("copy"); done(); } catch (e) {} document.body.removeChild(ta);
-  }
-  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
-});
 </script>
 </body>
 </html>
