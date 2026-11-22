@@ -1,9 +1,7 @@
-[README.md](https://github.com/user-attachments/files/35226245/README.md)
+[Uploading README.md…]()
 # RainSaver: A Sensor-Controlled Plant Watering System Powered by Rainwater
 
 **Adam Hoang, Grade 9, David Thompson Secondary School (November 2026)**
-
-![The finished RainSaver build](images/figure-2j-finished-build.jpg)
 
 ## Abstract
 
@@ -45,19 +43,6 @@ The system was tested on dry, damp and wet soil (three trials of 400 seconds eac
 | Pin 7 | Relay IN1 |
 | GND | Sensor, relay |
 
-## Photos of the build
-
-| | |
-|---|---|
-| ![Barbs wrapped in Teflon tape](images/figure-2a-barbs-teflon.jpg) | ![Barb fitted through the bucket wall](images/figure-2b-barb-in-bucket.jpg) |
-| *Figure 2. Brass hose barbs wrapped in Teflon tape.* | *Figure 3. Brass hose barb fitted through the bucket wall.* |
-| ![Leak test, start](images/figure-2c-leak-test-start.jpg) | ![Leak test after 30 minutes](images/figure-2d-leak-test-30min.jpg) |
-| *Figure 4. Leak test, start.* | *Figure 5. Leak test after 30 minutes. No leaks were seen.* |
-| ![Tubing](images/figure-2e-tubing.jpg) | ![Breadboard wiring](images/figure-2f-breadboard.jpg) |
-| *Figure 6. Tubing from the bucket barb to the valve.* | *Figure 7. Breadboard with the diode, relay and Arduino wiring.* |
-| ![Bucket on stool](images/figure-2h-bucket-on-stool.jpg) | ![Pot](images/figure-2i-pot.jpg) |
-| *Figure 8. Rain bucket raised on a stool.* | *Figure 9. Porcelain pot with soil, in the green basket.* |
-
 ## Results
 
 | Trial | Soil condition | Starting moisture (%) | Valve opened? | Ending moisture (%) | Time (s) |
@@ -72,17 +57,8 @@ The system was tested on dry, damp and wet soil (three trials of 400 seconds eac
 | 8 | Wet (above 60%) | 96 | No | 96 | 400 |
 | 9 | Wet (above 60%) | 94 | No | 93 | 400 |
 
-![Dry soil trials](images/figure-3a-dry-trials.png)
 
-*Figure 10. Soil moisture (%) over time for the three dry soil trials.*
 
-![Damp soil trials](images/figure-3b-damp-trials.png)
-
-*Figure 11. Soil moisture (%) over time for the three damp soil trials.*
-
-![Wet soil trials](images/figure-3c-wet-trials.png)
-
-*Figure 12. Soil moisture (%) over time for the three wet soil trials.*
 
 **Observations:** the solenoid valve clicked as it opened, the relay clicked at the same moment, and its lime green light turned on whenever the relay switched on the valve. The sensor readings were a little inconsistent unless the sensor was pushed fully down into the soil.
 
@@ -106,9 +82,8 @@ The data support the hypothesis. The valve opened in all three dry soil trials a
 
 ## Files
 
-- `index.html`: project website with the results, an interactive simulation of the control rules, and a log analyzer for the Arduino data log
+- `index.html`: project website with the photos, graphs, results, an interactive simulation of the control rules, and a log analyzer for the Arduino data log
 - `auto_waterer.ino`: Arduino code
-- `images/`: photos of the build and graphs of the results
 
 ## Data logging
 
