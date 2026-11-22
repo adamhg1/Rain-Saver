@@ -149,6 +149,13 @@
   a.dl { display: inline-block; background: var(--navy); color: #fff; text-decoration: none; font-weight: 500; padding: 9px 16px; border-radius: 4px; }
   a.dl:hover { background: var(--blue); }
   @media (max-width: 860px) { .specs.three { grid-template-columns: 1fr; } .specs.three div { border-right: 0 !important; border-bottom: 1px solid var(--line); } .specs.three div:last-child { border-bottom: 0; } }
+  figure.ph{margin:0}
+  figure.ph img{display:block;width:100%;height:auto;border-radius:3px}
+  .gallery{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin-top:24px}
+  .num td,.num th{text-align:center}
+  table.data{min-width:0;max-width:640px}
+  table.data th,table.data td{text-align:center}
+  ul.plain{margin:0 0 14px;padding-left:22px}
 </style>
 </head>
 <body>
@@ -163,6 +170,8 @@
       <a href="#analyzer">Log analyzer</a>
       <a href="#method">Method</a>
       <a href="#results">Results</a>
+      <a href="#discussion">Discussion</a>
+      <a href="#conclusion">Conclusion</a>
       <a href="#references">References</a>
     </nav>
   </div>
@@ -176,9 +185,9 @@
       <p class="subhead">A Sensor-Controlled Plant Watering System Powered by Rainwater</p>
       <p class="subtitle">A plant watering system that uses rainwater instead of tap water, and only waters when the soil is actually dry.</p>
       <div class="specs three">
-        <div><b>0 L</b><span>Tap water used</span></div>
-        <div><b>35 % → 60 %</b><span>Soil moisture target range</span></div>
-        <div><b>10 days</b><span>Data stored on the Arduino</span></div>
+        <div><b>3 of 3</b><span>Dry soil trials: valve opened</span></div>
+        <div><b>6 of 6</b><span>Damp and wet trials: valve stayed closed</span></div>
+        <div><b>35 % → 60 %</b><span>Watering start and stop thresholds</span></div>
       </div>
     </div>
   </div>
@@ -187,17 +196,17 @@
     <div class="wrap">
       <div class="sec-num">01</div>
       <h2>Why it matters</h2>
-      <p class="lead">In Metro Vancouver, daily water use rises by about 50 % in the hot, dry summer months, from about 1 billion to more than 1.5 billion litres a day, mostly because of lawn and garden watering (Metro Vancouver, n.d.). Almost all of it is treated drinking water.</p>
+      <p class="lead">In Metro Vancouver, daily water use rises by about 50 % in the hot, dry summer months, from about 1 billion to more than 1.5 billion litres a day, mostly because of lawn and garden watering (Metro Vancouver, n.d.).</p>
       <p>British Columbians also use more water at home than the Canadian average of 223 litres per person per day (Statistics Canada, 2023). During the 2023 drought, Metro Vancouver moved to Stage 2 restrictions and banned all lawn watering (City of Vancouver, 2023).</p>
       <p>Two simple changes can help. Rainwater collected in a barrel reduces demand on treated drinking water, and it is chlorine-free and at outdoor temperature, which is better for plants (City of Vancouver, n.d.). Soil moisture sensors can prevent watering when the soil is already wet, although research has shown that their accuracy varies and that they save the most water where people over-water (Cardenas-Lailhacar &amp; Dukes, 2010; Dukes, 2012). Low-cost sensors need to be calibrated for the soil they are used in (Placidi et al., 2020). RainSaver combines both ideas.</p>
       <div class="grid2" style="margin-top:24px">
         <div class="box">
           <div class="lbl">Question</div>
-          <p>Can a sensor-controlled system keep a plant's soil moisture between 35&nbsp;% and 60&nbsp;% using only collected rainwater?</p>
+          <p>Will a sensor-controlled irrigation system powered by collected rainwater open the valve on dry soil and stay closed on damp and wet soil, as a model for cutting outdoor water waste in dry months?</p>
         </div>
         <div class="box">
           <div class="lbl">Hypothesis</div>
-          <p>If the plant is watered only when the soil drops below 35&nbsp;%, then the soil will stay in the target range while using less water than watering on a fixed schedule.</p>
+          <p>If the soil moisture is below 35&nbsp;%, then the valve will open and close again at 60&nbsp;%. If the soil is damp (35&nbsp;% to 60&nbsp;%) or wet (above 60&nbsp;%), then the valve will stay closed, because the system only waters when the sensor reads dry soil.</p>
         </div>
       </div>
     </div>
@@ -265,13 +274,14 @@
         </div>
         <div class="box">
           <div class="lbl">Safety</div>
-          <p>If watering doesn't raise the moisture, the bucket is probably empty, so the system stops. The valve also closes automatically if the power goes out.</p>
+          <p>If watering does not raise the moisture, the bucket is probably empty, so the system stops. The valve also closes automatically if the power goes out.</p>
         </div>
         <div class="box">
           <div class="lbl">Materials</div>
-          <p>Arduino Uno, soil moisture sensor, 5 V relay, 12 V solenoid valve, 12 V power supply, rain bucket, tubing.</p>
+          <p>Arduino Uno R3, capacitive soil moisture sensor V2.0.0, 5&nbsp;V one-channel relay module, 12&nbsp;V normally closed solenoid valve, 12&nbsp;V 2&nbsp;A power adapter, 1N4007 diode, 4-gallon rain bucket, 1/2 inch clear vinyl tubing, brass hose barbs, porcelain pot with soil, plywood base, and a stool to raise the bucket.</p>
         </div>
       </div>
+      <div class="gallery"><figure class="ph"><div class="fig-frame"><img src="images/figure-2j-finished-build.jpg" alt="The finished RainSaver build: valve, relay, Arduino and plywood base."></div><figcaption><b>Figure 4.</b> The finished RainSaver build: valve, relay, Arduino and plywood base.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2g-overall-setup.jpg" alt="Overall test setup: rain bucket on a stool, valve board, pot and laptop."></div><figcaption><b>Figure 5.</b> Overall test setup: rain bucket on a stool, valve board, pot and laptop.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2i-pot.jpg" alt="Porcelain pot with soil, in the green basket."></div><figcaption><b>Figure 6.</b> Porcelain pot with soil, in the green basket.</figcaption></figure></div>
       <p style="margin-top:20px"><a class="dl" href="auto_waterer.ino" download>Download the Arduino code</a></p>
     </div>
   </section>
@@ -281,6 +291,8 @@
       <div class="sec-num">03</div>
       <h2>Interactive simulation</h2>
       <p class="lead">This model runs the same control rules as the Arduino code. Change the conditions and observe how the system responds. The soil absorbs water gradually, so the sensor reading rises after a delay, as it does in a real pot.</p>
+
+      <div class="callout warn"><b>Note:</b> The simulation is a model of the control rules. It does not contain measured data. The measured results are in the Results section.</div>
 
       <div class="sim-top">
         <div class="fig-frame" style="display:flex;align-items:center">
@@ -389,7 +401,7 @@
     <div class="wrap">
       <div class="sec-num">04</div>
       <h2>Log analyzer</h2>
-      <p class="lead">Type <code>d</code> in the Arduino Serial Monitor, copy the output, and paste it below. The analyzer converts the records to real dates and times, graphs them, and calculates summary statistics. Nothing is uploaded; everything runs in your browser.</p>
+      <p class="lead">Type <code>d</code> in the Arduino Serial Monitor, copy the output, and paste it below. The analyzer converts the records to real dates and times, graphs them, and calculates summary statistics. It is provided as a tool for longer tests; the results reported here were recorded from the Serial Monitor every 50 seconds. Nothing is uploaded; all processing happens in the browser.</p>
 
       <div class="box">
         <label for="logIn" style="font-weight:600;color:var(--navy)">1. Paste the Serial Monitor output</label>
@@ -432,12 +444,14 @@
       <div class="sec-num">05</div>
       <h2>Method</h2>
       <ol class="method">
-        <li><b>Calibrate</b> the sensor in dry soil and in water, using the same soil as the experiment.</li>
-        <li><b>Test</b> the valve with the bucket full, and measure how many mL per second it lets through.</li>
-        <li><b>Start the log</b> and write the date and time in the logbook.</li>
-        <li><b>Run</b> one automatic pot and one pot watered on a fixed schedule for at least 7 days.</li>
-        <li><b>Analyze</b> the saved data with the log analyzer and compare the water used by each pot.</li>
+        <li><b>Build the plumbing.</b> A brass hose barb was fitted through the bottom of the bucket with a gasket, a lock nut and sealant. Teflon tape was wrapped on the threads of two barbs, and one barb was screwed into each side of the valve. Tubing was clamped from the bucket to the valve inlet and from the valve outlet to the pot. The bucket was raised on a stool above the valve and pot.</li>
+        <li><b>Leak test.</b> The bucket was filled with water and left on cardboard for 30 minutes. No leaks were seen.</li>
+        <li><b>Wire the electronics.</b> The sensor was connected to pin 8 (power), GND and A0 (signal). The relay control side was connected to 5&nbsp;V, GND and pin 7. The 12&nbsp;V adapter powered the valve through the relay switch side, and a 1N4007 diode was placed across the valve wires to protect the relay from the voltage spike when the coil switches off.</li>
+        <li><b>Calibrate the sensor.</b> The sensor read 562 in open air (dry) and 245 in water (wet). These values were entered in the code. The adapter voltage was 11.7&nbsp;V with the valve open, above the 11&nbsp;V minimum.</li>
+        <li><b>Run the trials.</b> Dry (below 35&nbsp;%), damp (35&nbsp;% to 60&nbsp;%) and wet (above 60&nbsp;%) soil were each tested three times for 400 seconds. The moisture and the valve state were recorded every 50 seconds.</li>
+        <li><b>Analyze.</b> Moisture was graphed against time for each trial, and the valve behaviour was compared with the hypothesis.</li>
       </ol>
+      <div class="gallery"><figure class="ph"><div class="fig-frame"><img src="images/figure-2a-barbs-teflon.jpg" alt="Brass hose barbs wrapped in Teflon tape."></div><figcaption><b>Figure 7.</b> Brass hose barbs wrapped in Teflon tape.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2b-barb-in-bucket.jpg" alt="Brass hose barb fitted through the bucket wall."></div><figcaption><b>Figure 8.</b> Brass hose barb fitted through the bucket wall.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2c-leak-test-start.jpg" alt="Leak test, start of the test."></div><figcaption><b>Figure 9.</b> Leak test, start of the test.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2d-leak-test-30min.jpg" alt="Leak test after 30 minutes. No leaks were seen."></div><figcaption><b>Figure 10.</b> Leak test after 30 minutes. No leaks were seen.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2e-tubing.jpg" alt="Tubing connected from the bucket barb to the valve."></div><figcaption><b>Figure 11.</b> Tubing connected from the bucket barb to the valve.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2h-bucket-on-stool.jpg" alt="Rain bucket raised on a stool above the valve and pot."></div><figcaption><b>Figure 12.</b> Rain bucket raised on a stool above the valve and pot.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-2f-breadboard.jpg" alt="Breadboard with the diode, relay and Arduino wiring."></div><figcaption><b>Figure 13.</b> Breadboard with the diode, relay and Arduino wiring.</figcaption></figure></div>
     </div>
   </section>
 
@@ -445,25 +459,59 @@
     <div class="wrap">
       <div class="sec-num">06</div>
       <h2>Results</h2>
-      <div class="table-wrap">
-        <table>
-          <thead><tr><th>Measurement</th><th>Automatic</th><th>Fixed schedule</th></tr></thead>
-          <tbody>
-            <tr><td class="k">Days tested</td><td class="num"><span class="blank"></span></td><td class="num"><span class="blank"></span></td></tr>
-            <tr><td class="k">Time in target range (35–60 %)</td><td class="num"><span class="blank"></span> %</td><td class="num"><span class="blank"></span> %</td></tr>
-            <tr><td class="k">Water used</td><td class="num"><span class="blank"></span> L</td><td class="num"><span class="blank"></span> L</td></tr>
-            <tr><td class="k">Tap water used</td><td class="num">0 L</td><td class="num"><span class="blank"></span> L</td></tr>
-          </tbody>
-        </table>
-      </div>
-      <h3 style="margin-top:28px">Conclusion</h3>
-      <p style="color:var(--muted)">To be completed after testing.</p>
+      <p><b>Table 1.</b> Valve result for each soil condition.</p>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Trial</th><th>Soil condition</th><th>Starting moisture (%)</th><th>Valve opened?</th><th>Ending moisture (%)</th><th>Time (s)</th></tr></thead><tbody><tr><td class="num">1</td><td>Dry (below 35%)</td><td class="num">24</td><td>Yes</td><td class="num">78</td><td class="num">400</td></tr><tr><td class="num">2</td><td>Dry (below 35%)</td><td class="num">31</td><td>Yes</td><td class="num">76</td><td class="num">400</td></tr><tr><td class="num">3</td><td>Dry (below 35%)</td><td class="num">21</td><td>Yes</td><td class="num">71</td><td class="num">400</td></tr><tr><td class="num">4</td><td>Damp (35% to 60%)</td><td class="num">40</td><td>No</td><td class="num">41</td><td class="num">400</td></tr><tr><td class="num">5</td><td>Damp (35% to 60%)</td><td class="num">42</td><td>No</td><td class="num">43</td><td class="num">400</td></tr><tr><td class="num">6</td><td>Damp (35% to 60%)</td><td class="num">48</td><td>No</td><td class="num">46</td><td class="num">400</td></tr><tr><td class="num">7</td><td>Wet (above 60%)</td><td class="num">98</td><td>No</td><td class="num">100</td><td class="num">400</td></tr><tr><td class="num">8</td><td>Wet (above 60%)</td><td class="num">96</td><td>No</td><td class="num">96</td><td class="num">400</td></tr><tr><td class="num">9</td><td>Wet (above 60%)</td><td class="num">94</td><td>No</td><td class="num">93</td><td class="num">400</td></tr></tbody></table></div>
+      <p style="margin-top:24px"><b>Table 2.</b> Moisture (%) over time, dry soil trials.</p>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Time (s)</th><th>Dry trial 1 (%)</th><th>Dry trial 2 (%)</th><th>Dry trial 3 (%)</th></tr></thead><tbody><tr><td class="num">0</td><td class="num">24</td><td class="num">31</td><td class="num">21</td></tr><tr><td class="num">50</td><td class="num">38</td><td class="num">44</td><td class="num">32</td></tr><tr><td class="num">100</td><td class="num">77</td><td class="num">65</td><td class="num">68</td></tr><tr><td class="num">150</td><td class="num">78</td><td class="num">71</td><td class="num">70</td></tr><tr><td class="num">200</td><td class="num">78</td><td class="num">73</td><td class="num">71</td></tr><tr><td class="num">250</td><td class="num">78</td><td class="num">75</td><td class="num">71</td></tr><tr><td class="num">300</td><td class="num">78</td><td class="num">76</td><td class="num">71</td></tr><tr><td class="num">350</td><td class="num">78</td><td class="num">76</td><td class="num">71</td></tr><tr><td class="num">400</td><td class="num">78</td><td class="num">76</td><td class="num">71</td></tr></tbody></table></div>
+      <p style="margin-top:24px"><b>Table 3.</b> Moisture (%) over time, damp soil trials.</p>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Time (s)</th><th>Damp trial 1 (%)</th><th>Damp trial 2 (%)</th><th>Damp trial 3 (%)</th></tr></thead><tbody><tr><td class="num">0</td><td class="num">40</td><td class="num">42</td><td class="num">48</td></tr><tr><td class="num">50</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr><tr><td class="num">100</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr><tr><td class="num">150</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr><tr><td class="num">200</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr><tr><td class="num">250</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr><tr><td class="num">300</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr><tr><td class="num">350</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr><tr><td class="num">400</td><td class="num">41</td><td class="num">43</td><td class="num">46</td></tr></tbody></table></div>
+      <p style="margin-top:24px"><b>Table 4.</b> Moisture (%) over time, wet soil trials.</p>
+      <div class="table-wrap"><table class="data"><thead><tr><th>Time (s)</th><th>Wet trial 1 (%)</th><th>Wet trial 2 (%)</th><th>Wet trial 3 (%)</th></tr></thead><tbody><tr><td class="num">0</td><td class="num">98</td><td class="num">96</td><td class="num">94</td></tr><tr><td class="num">50</td><td class="num">99</td><td class="num">97</td><td class="num">93</td></tr><tr><td class="num">100</td><td class="num">100</td><td class="num">96</td><td class="num">93</td></tr><tr><td class="num">150</td><td class="num">100</td><td class="num">96</td><td class="num">93</td></tr><tr><td class="num">200</td><td class="num">100</td><td class="num">96</td><td class="num">93</td></tr><tr><td class="num">250</td><td class="num">100</td><td class="num">96</td><td class="num">93</td></tr><tr><td class="num">300</td><td class="num">100</td><td class="num">96</td><td class="num">93</td></tr><tr><td class="num">350</td><td class="num">100</td><td class="num">96</td><td class="num">93</td></tr><tr><td class="num">400</td><td class="num">100</td><td class="num">96</td><td class="num">93</td></tr></tbody></table></div>
+      <p style="margin-top:24px"><b>Calibration:</b> raw sensor reading 562 in open air (dry) and 245 in water (wet), on a scale of 0 to 1023.</p>
+      <div class="gallery"><figure class="ph"><div class="fig-frame"><img src="images/figure-3a-dry-trials.png" alt="Soil moisture (%) over time for the three dry soil trials."></div><figcaption><b>Figure 14.</b> Soil moisture (%) over time for the three dry soil trials.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-3b-damp-trials.png" alt="Soil moisture (%) over time for the three damp soil trials."></div><figcaption><b>Figure 15.</b> Soil moisture (%) over time for the three damp soil trials.</figcaption></figure><figure class="ph"><div class="fig-frame"><img src="images/figure-3c-wet-trials.png" alt="Soil moisture (%) over time for the three wet soil trials."></div><figcaption><b>Figure 16.</b> Soil moisture (%) over time for the three wet soil trials.</figcaption></figure></div>
+      <h3 style="margin-top:28px">Observations</h3>
+      <ul class="plain">
+        <li>The water looked mostly saturated after the dry soil trials.</li>
+        <li>When a dry soil trial started, the solenoid valve made a click as it opened and the water began to flow through the tubing.</li>
+        <li>The relay module made a click at the same moment, and its lime green light turned on whenever the relay switched on the valve.</li>
+        <li>The sensor readings were a little inconsistent unless the sensor was pushed fully down into the soil.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="discussion">
+    <div class="wrap">
+      <div class="sec-num">07</div>
+      <h2>Discussion</h2>
+      <p>The valve opened in all three dry soil trials. The moisture started at 24%, 31% and 21% and rose to 78%, 76% and 71% by 400 seconds. In the three damp soil trials, the moisture started at 40%, 42% and 48% and ended at 41%, 43% and 46%, and in the three wet soil trials it started at 98%, 96% and 94% and ended at 100%, 96% and 93%. The valve stayed closed in all six of these trials.</p>
+      <p>The data support the hypothesis. In the dry soil trials, the watering stopped at around 60% moisture, as designed. However, as the water settled through the soil, the moisture reading kept rising and ended well above 70% (71% to 78%). The final moisture was therefore higher than the 60% stop point, because the water continued to spread to the sensor after the valve had closed. On dry soil, the moisture rose by 34 to 53 percentage points in the first 100 seconds and then levelled off after about 150 seconds. On damp and wet soil, the readings stayed almost flat. Wet trial 1 stayed at 100%, which is the top of the sensor's scale.</p>
+      <h3 style="margin-top:24px">Sources of error</h3>
+      <ul class="plain">
+        <li><b>Sensor accuracy:</b> the reading changes with how tightly the soil is packed around the sensor.</li>
+        <li><b>Calibration:</b> the dry and wet readings are only as accurate as the time they were taken.</li>
+        <li><b>Sensor position:</b> soil moisture is not the same everywhere in a pot.</li>
+        <li><b>Soil set-up:</b> the damp and wet soil were prepared by hand, so the starting moisture may not be exactly as planned.</li>
+        <li><b>Short trials:</b> each trial lasted only 400 seconds because the laptop had to stay plugged in.</li>
+        <li><b>Power supply:</b> the 12&nbsp;V adapter is close to the valve's needs (about 1.7&nbsp;A).</li>
+        <li><b>Few trials:</b> each condition was tested only three times.</li>
+      </ul>
+      <h3 style="margin-top:24px">Next steps</h3>
+      <p>Tune the stop point, add a water level sensor to the bucket, test more than one plant and soil type, use the data logger to run the system for several days, and test outdoors for several weeks in dry weather. A real garden is much larger and the weather changes, so a larger system would need more sensors and a bigger rain barrel.</p>
+    </div>
+  </section>
+
+  <section id="conclusion" class="alt">
+    <div class="wrap">
+      <div class="sec-num">08</div>
+      <h2>Conclusion</h2>
+      <p>The system opened the valve in all three dry soil trials (21% to 31% moisture) and kept it closed in all three damp trials (40% to 48%) and all three wet trials (94% to 98%). This supports the hypothesis, except that the watering stopped at around 60% and the moisture then rose to 71% to 78% as the water settled.</p>
+      <p>These results suggest that a sensor-controlled system powered by rainwater could reduce water waste by watering only when the soil is dry. Future work should tune the stop point, add a water level sensor to the bucket, test more than one plant and soil type, and run the system outdoors for a longer period.</p>
     </div>
   </section>
 
   <section id="references">
     <div class="wrap">
-      <div class="sec-num">07</div>
+      <div class="sec-num">09</div>
       <h2>References</h2>
       <ol class="refs">
         <li>Cardenas-Lailhacar, B., &amp; Dukes, M. D. (2010). Precision of soil moisture sensor irrigation controllers under field conditions. <i>Agricultural Water Management, 97</i>(5), 666–672. https://doi.org/10.1016/j.agwat.2009.12.009</li>
@@ -480,7 +528,7 @@
 </main>
 
 <footer>
-  <div class="wrap">RainSaver · A Sensor-Controlled Plant Watering System Powered by Rainwater · Science fair project, 2026</div>
+  <div class="wrap">RainSaver · A Sensor-Controlled Plant Watering System Powered by Rainwater · Adam Hoang, David Thompson Secondary School · Science fair project, 2026</div>
 </footer>
 
 <script>
